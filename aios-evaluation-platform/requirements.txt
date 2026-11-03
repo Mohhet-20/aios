@@ -1,0 +1,12 @@
+fastapi==0.143.5
+uvicorn[standard]==0.54.0
+pydantic==2.14.1
+pydantic-settings==2.15.0
+sqlalchemy==2.0.55
+aiosqlite==0.22.1
+structlog==24.2.0
+sse-starlette==3.6.0
+httpx==0.28.1
+jsonschema==4.22.0
+python-slugify==8.0.4
+-e ../aios-ai-core

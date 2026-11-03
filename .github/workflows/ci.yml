@@ -1,0 +1,132 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repo:
+    name: Repository checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Shared modules are identical in every service
+        run: python scripts/check_shared_modules.py
+      - name: Compose file is valid
+        env:
+          AIOS_INTERNAL_TOKEN: ci-placeholder-not-a-secret-0123456789abcdef
+          AIOS_JWT_SECRET: ci-placeholder-not-a-secret-0123456789abcdef
+        run: docker compose config -q
+
+  service:
+    name: ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - aios-backend
+          - aios-ai-core
+          - aios-prompt-platform
+          - aios-agent-platform
+          - aios-memory-platform
+          - aios-workflow-engine
+          - aios-tool-platform
+          - aios-evaluation-platform
+          - aios-identity-platform
+          - aios-collaboration-platform
+          - aios-observability-platform
+          - aios-security-platform
+          - aios-infrastructure-platform
+          - aios-developer-platform
+          - aios-api-gateway-platform
+          - aios-analytics-platform
+          - aios-quality-platform
+          - aios-docs-platform
+          - aios-release-platform
+          - aios-perf-platform
+    defaults:
+      run:
+        working-directory: ${{ matrix.service }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: ${{ matrix.service }}/requirements*.txt
+      - name: Install
+        # Six services install ../aios-ai-core editable from their requirements file, so the
+        # monorepo checkout is the build context, exactly as in docker-compose.
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt pip-audit
+      - name: Lint
+        run: ruff check .
+      - name: Test
+        run: pytest
+      - name: Dependency audit
+        run: pip-audit -r requirements.txt --progress-spinner off
+
+  integration:
+    name: System smoke test (all 20 services)
+    runs-on: ubuntu-latest
+    env:
+      AIOS_INTERNAL_TOKEN: ci-internal-token-not-a-secret-0123456789
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: aios-*/requirements*.txt
+      - name: Install every service into one environment
+        run: |
+          python -m pip install --upgrade pip
+          # "-e ../aios-ai-core" in six files is relative to each service directory; install it once
+          # from the root instead and merge the remaining pins (they are aligned across services).
+          grep -hv '^-e' aios-*/requirements.txt | sort -u > /tmp/requirements-all.txt
+          pip install -e aios-ai-core -r /tmp/requirements-all.txt
+      - name: Start all services (SQLite, same ports as compose)
+        run: |
+          python scripts/dev.py > dev.log 2>&1 &
+          for i in $(seq 1 120); do grep -q 'services ready' dev.log && break; sleep 1; done
+          cat dev.log
+      - name: Smoke test (readiness, persistence, edge guard)
+        run: python scripts/smoke_test.py
+      - name: Seed demo data twice (idempotent)
+        run: python scripts/seed_demo.py && python scripts/seed_demo.py
+      - name: Service logs
+        if: failure()
+        run: tail -n 50 var/logs/*.log
+
+  frontend:
+    name: aios-frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: aios-frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: aios-frontend/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - run: npm audit --omit=dev --audit-level=high

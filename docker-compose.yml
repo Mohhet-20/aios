@@ -1,0 +1,350 @@
+# AIOS local/staging multi-service composition.
+#
+# This wires every platform to its own logical Postgres database on a
+# single shared Postgres instance (one server, many databases — simplest
+# topology for local dev and small staging environments; a real production
+# rollout would typically give each platform its own managed database
+# instance instead, which this file does not attempt to model).
+#
+# Build context note: the 6 platforms that depend on `aios-ai-core` as an
+# editable sibling package (prompt/agent/memory/workflow-engine/tool/
+# evaluation — see each platform's requirements.txt) must be built with the
+# monorepo root as context, which is exactly what running
+# `docker compose build` from this file's directory (the monorepo root)
+# does automatically — do not `cd` into an individual platform directory
+# and run `docker build .` for those six.
+#
+# Usage:
+#   docker compose up --build postgres backend ai-core   # start a subset
+#   docker compose up --build                            # start everything
+#
+# Every service exposes /health, /health/live, /health/ready on its
+# container port 8000, mapped below to a unique host port per service.
+
+# Secrets come from an untracked .env next to this file (copy .env.example). Compose refuses to start
+# without them: services run with APP_ENV=production, which makes each one fail closed on a missing or
+# weak AIOS_INTERNAL_TOKEN, and the identity service on a missing or weak signing key.
+x-service-env: &service-env
+  APP_ENV: production
+  AIOS_INTERNAL_TOKEN: ${AIOS_INTERNAL_TOKEN:?set AIOS_INTERNAL_TOKEN in .env (see .env.example)}
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: aios
+      POSTGRES_PASSWORD: aios_dev_password
+      POSTGRES_DB: aios
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/postgres-init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aios"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: aios-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/backend
+    ports:
+      - "8000:8000"
+
+  ai-core:
+    build:
+      context: aios-ai-core
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/ai_core
+    ports:
+      - "8001:8000"
+
+  prompt-platform:
+    build:
+      context: .
+      dockerfile: aios-prompt-platform/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/prompt_platform
+    ports:
+      - "8002:8000"
+
+  agent-platform:
+    build:
+      context: .
+      dockerfile: aios-agent-platform/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/agent_platform
+    ports:
+      - "8003:8000"
+
+  memory-platform:
+    build:
+      context: .
+      dockerfile: aios-memory-platform/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/memory_platform
+    ports:
+      - "8004:8000"
+
+  workflow-engine:
+    build:
+      context: .
+      dockerfile: aios-workflow-engine/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/workflow_engine
+    ports:
+      - "8005:8000"
+
+  tool-platform:
+    build:
+      context: .
+      dockerfile: aios-tool-platform/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/tool_platform
+    ports:
+      - "8006:8000"
+
+  evaluation-platform:
+    build:
+      context: .
+      dockerfile: aios-evaluation-platform/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/evaluation_platform
+    ports:
+      - "8007:8000"
+
+  identity-platform:
+    build:
+      context: aios-identity-platform
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/identity_platform
+      SECRET_KEY: ${AIOS_JWT_SECRET:?set AIOS_JWT_SECRET in .env (see .env.example)}
+    ports:
+      - "8008:8000"
+
+  collaboration-platform:
+    build:
+      context: aios-collaboration-platform
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/collaboration_platform
+    ports:
+      - "8009:8000"
+
+  observability-platform:
+    build:
+      context: aios-observability-platform
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/observability_platform
+    ports:
+      - "8010:8000"
+
+  security-platform:
+    build:
+      context: aios-security-platform
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/security_platform
+    ports:
+      - "8011:8000"
+
+  infrastructure-platform:
+    build:
+      context: aios-infrastructure-platform
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/infrastructure_platform
+    ports:
+      - "8012:8000"
+
+  developer-platform:
+    build:
+      context: aios-developer-platform
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/developer_platform
+    ports:
+      - "8013:8000"
+
+  api-gateway-platform:
+    build:
+      context: aios-api-gateway-platform
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/api_gateway_platform
+    ports:
+      - "8014:8000"
+
+  analytics-platform:
+    build:
+      context: aios-analytics-platform
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/analytics_platform
+    ports:
+      - "8015:8000"
+
+  quality-platform:
+    build:
+      context: aios-quality-platform
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/quality_platform
+    ports:
+      - "8016:8000"
+
+  docs-platform:
+    build:
+      context: aios-docs-platform
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/docs_platform
+    ports:
+      - "8017:8000"
+
+  release-platform:
+    build:
+      context: aios-release-platform
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/release_platform
+    ports:
+      - "8018:8000"
+
+  perf-platform:
+    build:
+      context: aios-perf-platform
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *service-env
+      DATABASE_URL: postgresql+asyncpg://aios:aios_dev_password@postgres:5432/perf_platform
+    ports:
+      - "8019:8000"
+
+  frontend:
+    build:
+      context: aios-frontend
+    restart: unless-stopped
+    depends_on:
+      - identity-platform
+    environment:
+      NODE_ENV: production
+      AIOS_INTERNAL_TOKEN: ${AIOS_INTERNAL_TOKEN:?set AIOS_INTERNAL_TOKEN in .env}
+      AIOS_JWT_SECRET: ${AIOS_JWT_SECRET:?set AIOS_JWT_SECRET in .env}
+      AIOS_DEMO_EMAIL: ${AIOS_DEMO_EMAIL:-}
+      AIOS_DEMO_PASSWORD: ${AIOS_DEMO_PASSWORD:-}
+      AIOS_BACKEND_URL: http://backend:8000
+      AIOS_AI_CORE_URL: http://ai-core:8000
+      AIOS_PROMPT_URL: http://prompt-platform:8000
+      AIOS_AGENT_URL: http://agent-platform:8000
+      AIOS_MEMORY_URL: http://memory-platform:8000
+      AIOS_WORKFLOW_URL: http://workflow-engine:8000
+      AIOS_TOOL_URL: http://tool-platform:8000
+      AIOS_EVALUATION_URL: http://evaluation-platform:8000
+      AIOS_IDENTITY_URL: http://identity-platform:8000
+      AIOS_COLLABORATION_URL: http://collaboration-platform:8000
+      AIOS_OBSERVABILITY_URL: http://observability-platform:8000
+      AIOS_SECURITY_URL: http://security-platform:8000
+      AIOS_INFRASTRUCTURE_URL: http://infrastructure-platform:8000
+      AIOS_DEVELOPER_URL: http://developer-platform:8000
+      AIOS_GATEWAY_URL: http://api-gateway-platform:8000
+      AIOS_ANALYTICS_URL: http://analytics-platform:8000
+      AIOS_QUALITY_URL: http://quality-platform:8000
+      AIOS_DOCS_URL: http://docs-platform:8000
+      AIOS_RELEASE_URL: http://release-platform:8000
+      AIOS_PERF_URL: http://perf-platform:8000
+    ports:
+      - "3000:3000"

@@ -1,0 +1,115 @@
+# frontend — Deployment + Service. Stateless Next.js app, no database
+# dependency, so this manifest is simpler than the backend platforms' (no
+# Secret/DATABASE_URL wiring, no readiness probe against a DB).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: aios
+  labels:
+    app: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: aios/frontend:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: AIOS_INTERNAL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: aios-app-secrets
+                  key: internal_token
+            - name: AIOS_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: aios-app-secrets
+                  key: jwt_secret
+            - name: AIOS_BACKEND_URL
+              value: "http://backend:8000"
+            - name: AIOS_AI_CORE_URL
+              value: "http://ai-core:8000"
+            - name: AIOS_PROMPT_URL
+              value: "http://prompt-platform:8000"
+            - name: AIOS_AGENT_URL
+              value: "http://agent-platform:8000"
+            - name: AIOS_MEMORY_URL
+              value: "http://memory-platform:8000"
+            - name: AIOS_WORKFLOW_URL
+              value: "http://workflow-engine:8000"
+            - name: AIOS_TOOL_URL
+              value: "http://tool-platform:8000"
+            - name: AIOS_EVALUATION_URL
+              value: "http://evaluation-platform:8000"
+            - name: AIOS_IDENTITY_URL
+              value: "http://identity-platform:8000"
+            - name: AIOS_COLLABORATION_URL
+              value: "http://collaboration-platform:8000"
+            - name: AIOS_OBSERVABILITY_URL
+              value: "http://observability-platform:8000"
+            - name: AIOS_SECURITY_URL
+              value: "http://security-platform:8000"
+            - name: AIOS_INFRASTRUCTURE_URL
+              value: "http://infrastructure-platform:8000"
+            - name: AIOS_DEVELOPER_URL
+              value: "http://developer-platform:8000"
+            - name: AIOS_GATEWAY_URL
+              value: "http://api-gateway-platform:8000"
+            - name: AIOS_ANALYTICS_URL
+              value: "http://analytics-platform:8000"
+            - name: AIOS_QUALITY_URL
+              value: "http://quality-platform:8000"
+            - name: AIOS_DOCS_URL
+              value: "http://docs-platform:8000"
+            - name: AIOS_RELEASE_URL
+              value: "http://release-platform:8000"
+            - name: AIOS_PERF_URL
+              value: "http://perf-platform:8000"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "192Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: aios
+spec:
+  selector:
+    app: frontend
+  ports:
+    - port: 80
+      targetPort: 3000
+  type: ClusterIP

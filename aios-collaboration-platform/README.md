@@ -1,0 +1,102 @@
+# AIOS Enterprise Collaboration & Workspace Platform
+
+The collaborative layer for every AIOS subsystem: shared workspaces, real-time collaboration, comments, mentions, activity feeds, notifications, reviews, approvals, version history, shared libraries, search, and team productivity — the platform that lets organizations build, review, manage, and improve their AI assets *together*, not the assets themselves.
+
+This is Phase 12 of the AIOS build. Package `collaboration_platform`, table prefix `cp_`. Prior prompts delivered the identity/auth layer (Phase 11) and every producing platform (AI Core, Prompt Platform, Agent Platform, Memory Platform, Workflow Engine, Tool Platform, Evaluation Platform) — this platform is what turns any of their outputs into something a team works on jointly rather than a single user's private artifact.
+
+## What it does
+
+**Workspaces and projects.** Personal/team/organization workspaces with an owner, a status lifecycle (active/archived, guarded — see below), settings and metadata JSON blobs, and an optional starting template (three built-in templates ship seeded, idempotently). Inside a workspace: projects, nested folders (cycle-checked on move — a folder can never become its own ancestor), curated collections (many-to-many groupings distinct from folders), workspace-scoped tags, and per-user favorites.
+
+**A generic collaboration-asset pointer, not a copy of anyone else's data.** `CollaborationAssetModel` is a lightweight record this platform owns for anything being collaborated on — prompt, agent, workflow, knowledge base, document, dataset, model, tool, dashboard, report, template, project, or custom — keyed by `(asset_type, external_ref_id)`. The actual content lives in its owning platform; this one only owns the collaboration surface (comments, versions, reviews, activity, sharing, workspace placement). That split keeps this a genuine cross-cutting layer instead of a duplicate data store.
+
+**Real-time collaboration.** Live presence with cursor positions and heartbeats (a stale-session sweep force-disconnects anyone whose heartbeat lapsed, since a crashed client never gets to send a clean `leave`), edit sessions with a per-asset concurrent-editor cap, pairwise conflict detection between edit sessions with diverging base versions, and a compare-and-swap `SyncService` guard (`assert_not_stale`) that `VersionService` calls when a caller opts into "reject my save if the asset moved on since I last read it." Offline/reconnection recovery reports whether an asset changed while a client was disconnected before it resubmits queued edits.
+
+**Comments and threaded discussions.** Flat-with-a-root-pointer threading (every reply's `thread_root_id` points straight at the top-level comment, never at its immediate parent, so loading a whole thread is one indexed query regardless of reply depth), emoji reactions, attachments (reference-only, no raw bytes stored), @mentions, resolve/reopen, pin/unpin, and edit history — all backed by the guarded `Comment` domain entity, whose independent `is_resolved`/`is_pinned`/`is_deleted` flags (not a single status enum) model states that genuinely combine independently, plus a terminal soft-delete that blocks any further mutation.
+
+**Activity feeds and notifications.** One append-only `ActivityEventModel` log filtered differently per feed (personal/project/workspace/organization) rather than separate per-scope tables that could drift apart. Notifications fan out to whatever channels a recipient's preferences enable (in-app, email, digest) through a pluggable `Sender` interface — the shipped `NullEmailSender` reference implementation logs what it would have sent and reports success rather than silently pretending this platform has a live SMTP integration, an honest disclosed gap in the same spirit as the Tool Platform's undocumented-connector precedent. Digests batch a user's pending digest-channel notifications, capped per run, with remainder carried to the next run rather than dropped.
+
+**Version control.** Immutable per-asset, per-branch version snapshots with an audit-preserving rollback (creates a *new* version copying old content — history is never rewritten), a shallow key-level diff for arbitrary JSON content, release tags validated against a configurable pattern, and named branches with merge support. Merge strategies (`FAST_FORWARD`/`THREE_WAY`/`MANUAL`) are honestly disclosed: this platform has no general-purpose structural merge algorithm for arbitrary JSON, so `FAST_FORWARD` and `THREE_WAY` both take the source branch's head content as-is, and `MANUAL` requires the caller to supply already-reconciled content rather than have the service guess.
+
+**Approval workflows.** Review requests with parallel or sequential (turn-enforced) reviewer chains, workspace-level policies (a catch-all plus optional per-asset-type override, more specific wins), and a guarded `ReviewRequest` entity whose `record_approval()` is the single source of truth for "has this crossed its required-approvals threshold" — the service layer only handles what depends on other rows (turn order, counting from the assignment table, since the count is deliberately never cached).
+
+**Shared libraries.** Publish an asset for reuse (prompt/agent/workflow-template/tool-template/knowledge-template) at private/organization/public visibility, track installs via an atomic counter increment, and per-user library favorites.
+
+**Search.** Lexical name/description search, tag search, naive in-memory metadata filtering, per-user recent items (LRU-trimmed on write), and saved searches. Semantic search is a disclosed gap the same way merge strategies are: `SemanticSearchProvider` is a `Protocol` with a `NullSemanticSearchProvider` reference implementation that passes lexical results through unchanged rather than fabricating similarity scores — swapping in a real provider backed by the AI Core's embedding engine is a one-file change behind the same interface.
+
+**Productivity.** Task assignments with a guarded todo/in-progress/done/cancelled lifecycle, ordered checklists (attached to a task or an asset), personal bookmarks with notes, and per-workspace pinned items with explicit drag-to-reorder positions.
+
+**Observability.** Collaboration activity summaries, workspace usage (member/project/asset counts, assets by type), editing-session stats, review/approval metrics (including a real approval rate), notification delivery health, per-user engagement, and workspace growth (member joins bucketed by day) — every metric computed on demand from the real tables, never a maintained counter that could drift, the same anti-drift discipline every prior AIOS platform's observability layer follows.
+
+**Security and governance.** A three-tier permission resolution (asset-level override beats workspace-level grant beats plain membership — most specific wins), a small ordered `WorkspaceRole` (viewer < commenter < editor < admin < owner) rather than the Identity Platform's fine-grained `resource_type:action` grammar (that engine already exists one layer down for platform-wide RBAC), share links (raw token shown once, only its hash persisted) and external email invitations, an immutable audit log distinct from the activity feed (different audience, different retention rules), and per-workspace retention policies with an idempotent sweep that hard-deletes soft-deleted assets past their window.
+
+## Architecture
+
+```
+collaboration_platform/
+  domain/                 entities.py (Workspace, CollaborationAsset, Comment, Branch, ReviewRequest,
+                           Task — guarded state machines) + enums.py
+  models/                 SQLAlchemy ORM models, 44 tables (cp_ prefix)
+  repositories/           one repository per aggregate + RepositoryRegistry unit-of-work
+  database/                async SQLAlchemy 2.0 + aiosqlite, WAL/busy-timeout/NullPool pragmas
+  workspace/                workspaces, members, templates
+  projects/                 projects, folders, collections, tags, favorites
+  collab_assets/            the cross-platform asset pointer
+  realtime/                 presence, edit sessions, conflict detection, CAS/offline-recovery sync
+  comments/                 comments, reactions, attachments
+  mentions/                 @mentions
+  activity/                 the activity feed
+  notifications/            notify/fan-out, preferences, delivery, digest
+  versioning/                versions, branches, merges
+  reviews/                   review requests, reviewer assignments, approval policies
+  libraries/                 shared library publish/install/favorite
+  search/                    lexical/tag/metadata search, recent items, saved searches
+  productivity/               tasks, checklists, bookmarks, pinned items
+  analytics/                  observability aggregates
+  governance/                  permissions, audit log, retention
+  sharing/                     share links, external shares
+  collab_api/                 FastAPI routers (167 endpoints across 16 domains) + application factory
+```
+
+### Design decisions worth knowing about
+
+**A commit-spanning lock is a different fix from an atomic SQL statement, and picking the wrong one is a real bug — this build hit both shapes in one pass.** Every check-then-act race in this platform got the smallest correct tool for its actual shape, discovered by real stress tests (`asyncio.gather` through independent `session_scope()` connections, never the rollback-isolated `repos` fixture). The seat-count-style races — `LibraryAssetRepository.increment_install_count`, `VersionRepository.add_next_version` — reduce to one `INSERT/UPDATE ... SELECT` statement, so SQLite's per-statement write lock makes them atomic with no application lock at all (the version-numbering fix specifically replaced a "read max, then insert" that a stress test proved raises `UNIQUE constraint failed` under real concurrent version creation). The races that genuinely span multiple statements — `EditSessionService.start_session`'s quota check, `ReviewService.approve`/`reject`'s threshold check — need an in-process `asyncio.Lock` held across the read, the writes, *and the commit*, because separate callers own separate DB connections and SQLite doesn't make one connection's write visible to another until it commits; a lock that released before commit (the naive first attempt, mirroring the exact mistake documented in the Identity Platform's session-limit fix) still lets the next lock-holder start from a stale, pre-commit read.
+
+**That same commit had a second-order consequence this build's test-isolation convention wasn't built for, and it's now documented rather than silently worked around.** The `repos`/`db_session` test fixture is rollback-isolated by design — every test's writes vanish at teardown, so hardcoded ids like `"user-2"` are safe to reuse across files. But `ReviewService.approve`/`reject` and `EditSessionService.start_session` now call `session.commit()` mid-method for the reason above, and a test that exercises either of them through that shared fixture (including indirectly, through the HTTP API test's dependency override) durably commits *everything else written earlier in that same test* — bypassing the rollback entirely. This surfaced as a real, reproducible cross-test leak: the HTTP end-to-end test added `"user-2"` as a workspace member, then called the review-approve endpoint (which now commits), and a later observability test's `workspace_count == 1` assertion saw 2 because the earlier test's membership row never got rolled back. Fixed the same way this build has fixed every prior test-data collision — a unique id instead of a shared placeholder — and the underlying mechanism is now documented directly on the `db_session` fixture so the next test author doesn't rediscover it the hard way.
+
+**Membership vs. permission grant vs. asset override are three different tables on purpose.** `WorkspaceMemberModel` is plain roster membership. `WorkspacePermissionModel` lets a principal (including a *team*, not just a user) get workspace-wide access without being added to the roster — "this team can comment on everything here" without an N-row membership operation. `AssetPermissionModel` is a narrower or wider override for one specific asset. `PermissionService.effective_role` resolves all three in that most-specific-wins order; collapsing them into one table would either force every team-wide grant into per-member rows or lose the ability to override a single asset without touching workspace-wide access.
+
+**Comments needed one deliberate override of the generic repository's soft-delete convention.** The base `SQLAlchemyRepository.get()` hides any row with `is_deleted=True` by default — correct for entities where "deleted" means "gone from every read path." A deleted *comment* is different: permalinks, thread rendering ("this comment was deleted"), edit-history lookups, and the guarded entity's own `InvalidTransitionError` on further mutation all depend on the row still resolving by id. `CommentRepository.get()` overrides the default to always fetch regardless of deletion state, and visibility in *listings* stays controlled explicitly per query via `list_for_asset`'s own `include_deleted` flag — a bug caught by a test expecting `edit_comment` on a deleted comment to raise the domain's `InvalidTransitionError`, not a misleading `NotFoundError`.
+
+## REST API
+
+167 endpoints across 16 routers, all under `/api/v1`: workspaces (13, including members and templates), projects (19, including folders/collections/tags/favorites), assets (9), realtime (14, presence/edit-sessions/conflicts/sync), comments (20, including reactions/attachments/mentions), activity (6), notifications (9, including preferences and digest), versions (11, including branches and merges), reviews (9, including approval policies), libraries (8), search (8, including recent items and saved searches), productivity (19, tasks/checklists/bookmarks/pinned), observability (7), governance (14, permissions/share-links/external-shares/audit/retention), and health (1). Caller identity travels via an `X-User-Id` header, the same seam every sibling AIOS platform's API layer uses on the assumption of an already-authenticated gateway in front (in practice, the Identity Platform).
+
+## Testing
+
+73 tests, all passing, 88% line coverage: domain state-machine unit tests (6), a repository smoke test spanning the whole schema (1), and dedicated suites for workspace/project management (8), real-time collaboration (5), comments/discussions (6), activity feed (1), notifications (4), version control (8), approval workflows (5), shared libraries (3, including a real 20-way concurrent-install stress test), search (5), productivity (4), observability (1), security/governance (6), a full HTTP-level API suite (5, driving the platform purely through `httpx.AsyncClient` against the real FastAPI app), and a concurrency/stress suite (3).
+
+The stress suite is the same genuinely adversarial style established across this build: real independent `session_scope()` connections racing via `asyncio.gather`, never the rollback-isolated fixture, with results captured in an outer variable so the loop always completes naturally (returning early from inside `async for session in session_scope(): ...` silently skips the post-yield commit — confirmed the hard way in the Identity Platform and deliberately avoided here from the start). All three stress tests found genuine, previously-undetected bugs before any fix existed: 10 concurrent edit-session starts against a limit of 3 all succeeded (oversold 3x), 8 concurrent version creations for the same asset+branch threw `UNIQUE constraint failed` on the version-number column, and 5 concurrent review approvals against a required-approvals=3 threshold all registered their individual vote but the request stayed stuck `IN_REVIEW` forever because every concurrent caller computed the threshold check from the same stale pre-approval count. Each was fixed at the root (documented above) and the fixed tests now assert the *correct* concurrent behavior — including, for the review case, that late-arriving votes on an already-decided request get a clean `ReviewAlreadyDecidedError` rather than being silently miscounted.
+
+Run the suite:
+```
+python3 -m pytest -q
+```
+
+## Self-review
+
+**Can hundreds of users collaborate simultaneously?** Presence, edit sessions, and comments are all designed for genuine multi-writer use (the edit-session cap is a soft bound on how many concurrent streams the conflict layer has to reconcile, not a single-writer lock), and the three races that could have silently corrupted shared state under real concurrent load — edit-session quota, version numbering, review approval counting — were each found by a stress test and fixed with the correct tool for its shape, not papered over with a blanket lock that would have serialized unrelated traffic.
+
+**Can conflicts be resolved without data loss?** `ConflictService` detects diverging edit-session bases pairwise and records them for resolution rather than silently picking a winner; `VersionService.rollback` never rewrites history, it creates a new version copying old content, so nothing is ever destructively lost even when someone reverts a bad change. The one honest limitation is structural merge: this platform doesn't attempt to reconcile arbitrary JSON content automatically (`MergeStrategy.MANUAL` exists specifically so a human-reconciled merge has a first-class path), which is a disclosed scope boundary, not a silent gap.
+
+**Can version history scale efficiently?** Versions are branch-scoped and numbered per branch, not globally, so a long-lived asset with many feature branches doesn't force one contended global counter; `add_next_version`'s atomic insert holds SQLite's write lock only for the duration of one statement, not a whole request. Diffing is a shallow key-level comparison with no assumption about content size baked in beyond what a JSON column can hold (`version_snapshot_max_bytes` is a configured, enforceable ceiling).
+
+**Can enterprises securely share AI assets?** Share links persist only a hashed token (the raw value is shown exactly once, the same pattern as every raw-secret-shown-once flow the Identity Platform established), expire on a configurable TTL, and are independently revocable. External sharing has an explicit enable/disable gate per invite call so a workspace can turn it off entirely without touching individual asset settings. The audit log is immutable and separate from the product-facing activity feed specifically so compliance evidence isn't mixed with — or accidentally prunable alongside — a feed users browse casually.
+
+**Can collaboration remain responsive under heavy load?** Every observability metric and every list endpoint queries real tables directly rather than maintaining a separately-cached aggregate that could drift or need its own consistency story; the tradeoff is that very large workspaces would need pagination this initial build doesn't yet add everywhere (a natural next increment, not a redesign). The one documented single-process caveat is the in-process locks used for the two commit-spanning fixes — correct for one process, an approximation once horizontally scaled, with a stated drop-in replacement path (a distributed lock) behind the same call sites, matching the exact caveat pattern already established for `RateLimitService` in the Identity Platform.
+
+**Can new collaboration features be added without redesign?** The generic `CollaborationAssetModel` pointer means a brand-new asset type from a future AIOS platform is a new `AssetType` enum value, not a schema change — comments, versions, reviews, activity, and sharing all already work against any `asset_id` regardless of what it points to. `NullEmailSender` and `NullSemanticSearchProvider` are both `Protocol`-based extension points already proven out with working reference implementations, so wiring in real email delivery or a real embedding-backed search provider is a one-file change behind an interface that every caller already uses.
+
+## What's explicitly out of scope (per this phase's scope boundary)
+
+No Enterprise Analytics platform (Observability here covers collaboration/workspace/engagement metrics only, not product analytics), no MLOps, and no Deployment Platform — this is the Collaboration & Workspace Platform only, exactly as scoped.

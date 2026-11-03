@@ -1,0 +1,22 @@
+[project]
+name = "aios-cli"
+version = "1.0.0"
+description = "Official command-line interface for the AIOS Enterprise Developer Platform."
+requires-python = ">=3.10"
+dependencies = [
+    "click>=8.1.7",
+    "aios-dev-sdk",
+]
+
+[project.scripts]
+aios = "aios_cli.main:cli"
+
+[project.optional-dependencies]
+dev = ["pytest>=8.2.2"]
+
+[tool.setuptools.packages.find]
+include = ["aios_cli*"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"

@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * AIOS Design Tokens
+ * -------------------------------------------------------------------------
+ * Every color in the product resolves to one of these variables. Components
+ * never hardcode a hex/hsl value — this is what makes theme switching (light/
+ * dark, and any future white-label brand theme) a CSS-variable swap instead
+ * of a component rewrite.
+ */
+@layer base {
+  :root {
+    /* Surface + text */
+    --background: 0 0% 100%;
+    --foreground: 222 20% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 20% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 20% 12%;
+
+    /* Brand */
+    --primary: 245 75% 59%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 20% 96%;
+    --secondary-foreground: 222 20% 12%;
+    --accent: 245 75% 96%;
+    --accent-foreground: 245 75% 40%;
+
+    /* Semantic status */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 152 60% 36%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 24 10% 10%;
+
+    /* Muted / chrome */
+    --muted: 220 20% 96%;
+    --muted-foreground: 222 12% 45%;
+    --border: 220 16% 90%;
+    --input: 220 16% 88%;
+    --ring: 245 75% 59%;
+
+    /* App shell surfaces (sidebar/topbar can diverge slightly from content bg) */
+    --sidebar: 222 25% 99%;
+    --sidebar-foreground: 222 20% 20%;
+    --sidebar-accent: 245 75% 96%;
+    --sidebar-border: 220 16% 90%;
+
+    /* Data-viz categorical palette — stable per-series across the product */
+    --chart-1: 245 75% 59%;
+    --chart-2: 199 89% 48%;
+    --chart-3: 152 60% 36%;
+    --chart-4: 38 92% 50%;
+    --chart-5: 340 75% 55%;
+
+    --radius: 0.625rem;
+    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  }
+
+  .dark {
+    --background: 224 24% 8%;
+    --foreground: 220 20% 92%;
+    --card: 224 22% 10%;
+    --card-foreground: 220 20% 92%;
+    --popover: 224 22% 10%;
+    --popover-foreground: 220 20% 92%;
+
+    --primary: 245 80% 68%;
+    --primary-foreground: 224 24% 8%;
+    --secondary: 222 18% 16%;
+    --secondary-foreground: 220 20% 92%;
+    --accent: 245 40% 20%;
+    --accent-foreground: 245 80% 80%;
+
+    --destructive: 0 68% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 152 55% 45%;
+    --success-foreground: 224 24% 8%;
+    --warning: 38 92% 55%;
+    --warning-foreground: 24 10% 10%;
+
+    --muted: 222 18% 15%;
+    --muted-foreground: 220 12% 62%;
+    --border: 222 16% 18%;
+    --input: 222 16% 20%;
+    --ring: 245 80% 68%;
+
+    --sidebar: 224 26% 7%;
+    --sidebar-foreground: 220 18% 85%;
+    --sidebar-accent: 245 40% 18%;
+    --sidebar-border: 222 16% 16%;
+
+    --chart-1: 245 80% 68%;
+    --chart-2: 199 85% 58%;
+    --chart-3: 152 55% 50%;
+    --chart-4: 38 92% 58%;
+    --chart-5: 340 70% 62%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  ::selection {
+    @apply bg-primary/20;
+  }
+  /* Consistent focus ring across every interactive element for accessibility */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+  .skeleton-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .skeleton-shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--foreground) / 0.06),
+      transparent
+    );
+    animation: shimmer 1.5s infinite;
+  }
+}

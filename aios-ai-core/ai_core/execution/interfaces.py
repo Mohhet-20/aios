@@ -1,0 +1,66 @@
+"""Protocols the execution engine depends on but doesn't implement. This is
+the same dependency-inversion pattern used everywhere else in the AI Core:
+the engine is fully testable/usable with no-op defaults, and task-specific
+concrete implementations (CostCalculator, UsageTracker, an structlog-backed
+observability logger) plug in without the engine changing.
+"""
+from __future__ import annotations
+
+from typing import Protocol
+
+# CostCalculator lives in ai_core/cost/cost_calculator.py, imported here as
+# DefaultCostCalculator — that module has no dependency on `execution/`, so
+# `execution` depending on `cost` (not the other way around) keeps the module
+# graph a DAG. This is what gives ExecutionEngine's constructor a working
+# zero-argument default without either module needing to know about the other.
+from ai_core.cost.cost_calculator import CostCalculator as DefaultCostCalculator
+from ai_core.registry.model_metadata import ModelMetadata
+from ai_core.schemas.requests import EmbeddingRequest, GenerationRequest
+from ai_core.schemas.responses import EmbeddingResponse, GenerationResponse
+from ai_core.schemas.usage import CostBreakdown, TokenUsage
+
+
+class CostCalculatorProtocol(Protocol):
+    def calculate(self, model: ModelMetadata, usage: TokenUsage) -> CostBreakdown: ...
+
+
+class UsageTrackerProtocol(Protocol):
+    def record_generation(self, request: GenerationRequest, response: GenerationResponse) -> None: ...
+    def record_embedding(self, request: EmbeddingRequest, response: EmbeddingResponse) -> None: ...
+    def check_limits(self, request: GenerationRequest) -> None:
+        """Should raise CostLimitExceededError/RateLimitExceededError if the
+        request's usage_context is currently over a configured limit."""
+
+
+class ObservabilityLoggerProtocol(Protocol):
+    def request_started(self, request: GenerationRequest, *, candidate: ModelMetadata) -> None: ...
+    def request_completed(self, request: GenerationRequest, response: GenerationResponse) -> None: ...
+    def request_failed(self, request: GenerationRequest, *, candidate: ModelMetadata, error: Exception) -> None: ...
+    def retry_attempted(self, request: GenerationRequest, *, candidate: ModelMetadata, attempt: int, error: Exception) -> None: ...
+    def fallback_triggered(self, request: GenerationRequest, *, failed: ModelMetadata, next_candidate: ModelMetadata) -> None: ...
+    def stream_chunk_emitted(self, request: GenerationRequest, *, candidate: ModelMetadata) -> None: ...
+    def tool_call_emitted(self, request: GenerationRequest, *, tool_name: str) -> None: ...
+
+
+class NullObservabilityLogger:
+    """Default no-op — every method is a deliberate pass so the engine is
+    usable standalone in tests without asserting on log calls."""
+
+    def request_started(self, request, *, candidate) -> None: ...
+    def request_completed(self, request, response) -> None: ...
+    def request_failed(self, request, *, candidate, error) -> None: ...
+    def retry_attempted(self, request, *, candidate, attempt, error) -> None: ...
+    def fallback_triggered(self, request, *, failed, next_candidate) -> None: ...
+    def stream_chunk_emitted(self, request, *, candidate) -> None: ...
+    def tool_call_emitted(self, request, *, tool_name) -> None: ...
+
+
+class NullUsageTracker:
+    def record_generation(self, request, response) -> None: ...
+    def record_embedding(self, request, response) -> None: ...
+    def check_limits(self, request) -> None: ...
+
+__all__ = [
+    "CostCalculatorProtocol", "UsageTrackerProtocol", "ObservabilityLoggerProtocol",
+    "NullObservabilityLogger", "NullUsageTracker", "DefaultCostCalculator",
+]

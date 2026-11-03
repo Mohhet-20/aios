@@ -1,0 +1,93 @@
+# security-platform — Deployment + Service.
+#
+# DATABASE_URL is read from the `aios-db-credentials` Secret (see
+# k8s/secrets.example.yaml — copy it, fill in real values, and apply it
+# yourself; it is deliberately not committed with real credentials).
+# Requests/limits are conservative defaults for a lightly-loaded FastAPI
+# + SQLAlchemy async service; tune per platform based on observed load.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: security-platform
+  namespace: aios
+  labels:
+    app: security-platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: security-platform
+  template:
+    metadata:
+      labels:
+        app: security-platform
+    spec:
+      containers:
+        - name: security-platform
+          image: aios/security-platform:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: APP_ENV
+              value: "production"
+            - name: AIOS_INTERNAL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: aios-app-secrets
+                  key: internal_token
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: aios-db-credentials
+                  key: security_platform_database_url
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "192Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          # Liveness never touches the database (see /health/live in the
+          # platform's health_check module) — a slow/unreachable database
+          # must never trigger a pod restart via liveness.
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 3
+          # Readiness runs a real `SELECT 1` — a pod that can't reach its
+          # database is taken out of the Service's load-balancing rotation
+          # without being killed.
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          # SIGTERM triggers the FastAPI lifespan shutdown path (disposes
+          # the DB engine cleanly); this just gives in-flight requests time
+          # to finish before the pod is removed from the Service endpoints
+          # and killed.
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sleep", "5"]
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: security-platform
+  namespace: aios
+spec:
+  selector:
+    app: security-platform
+  ports:
+    - port: 80
+      targetPort: 8000
+  type: ClusterIP

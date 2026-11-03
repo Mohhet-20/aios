@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+# Node / Next.js
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+# Local databases and secrets
+*.db
+*.db-wal
+*.db-shm
+.env
+k8s/secrets.yaml
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.zip
+var/

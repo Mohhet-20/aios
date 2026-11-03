@@ -1,0 +1,21 @@
+fastapi==0.143.5
+uvicorn[standard]==0.54.0
+python-multipart==0.0.32
+pydantic==2.14.1
+pydantic-settings==2.15.0
+email-validator
+sqlalchemy==2.0.55
+aiosqlite==0.22.1
+asyncpg==0.29.0
+greenlet
+structlog==24.2.0
+python-slugify
+sse-starlette==3.6.0
+httpx==0.28.1
+tiktoken==0.7.0
+jsonschema==4.22.0
+# Phase 4's AI Core — every model call this platform makes (planning,
+# reasoning, reflection, critique) flows through it, never a provider SDK
+# directly. Installed editable from the sibling build so this platform
+# always runs against the exact AI Core built in this repo.
+-e ../aios-ai-core

@@ -1,0 +1,30 @@
+# Web framework
+fastapi==0.143.5
+uvicorn[standard]==0.54.0
+python-multipart==0.0.32
+
+# Settings & validation
+pydantic==2.14.1
+pydantic-settings==2.15.0
+email-validator==2.2.0
+
+# Persistence
+sqlalchemy==2.0.55
+aiosqlite==0.22.1
+asyncpg==0.29.0
+alembic==1.13.2
+greenlet==3.0.3
+
+# Security
+PyJWT==2.15.1
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
+
+# Observability
+structlog==24.2.0
+prometheus-client==0.20.0
+
+# Utilities
+tenacity==8.5.0
+python-slugify==8.0.4
+orjson==3.13.0

@@ -1,0 +1,64 @@
+# Single-instance Postgres for local/staging Kubernetes clusters, mirroring
+# docker-compose.yml's topology (one server, one logical database per
+# platform — see docker/postgres-init-databases.sh for the exact list). A
+# real production rollout would typically use a managed Postgres service
+# (RDS, Cloud SQL, Azure Database for PostgreSQL) instead of this
+# StatefulSet, which has no backup/failover story.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: aios
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          env:
+            - name: POSTGRES_USER
+              value: "aios"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: aios-db-credentials
+                  key: postgres_password
+            - name: POSTGRES_DB
+              value: "aios"
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "aios"]
+            periodSeconds: 10
+  volumeClaimTemplates:
+    - metadata:
+        name: pgdata
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: aios
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+  clusterIP: None
