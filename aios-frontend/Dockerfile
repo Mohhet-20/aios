@@ -12,7 +12,9 @@ WORKDIR /build
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-RUN npm run build
+# public/ holds only empty folders, which git does not track, so a fresh clone has no public/ at all; the runtime
+# stage below copies it, so make sure it exists.
+RUN mkdir -p public && npm run build
 
 FROM base AS runtime
 WORKDIR /app
