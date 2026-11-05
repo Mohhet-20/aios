@@ -1,4 +1,4 @@
-"""Pagination primitives — identical pattern to every prior AIOS platform."""
+"""Pagination primitives — identical pattern to every other AIOS platform."""
 from __future__ import annotations
 
 from dataclasses import dataclass

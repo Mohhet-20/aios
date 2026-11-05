@@ -1,5 +1,5 @@
 """Webhooks schema (Integration Hub's outbound-delivery surface):
-identical subscription/delivery shape to every prior AIOS platform's
+identical subscription/delivery shape to every other AIOS platform's
 own webhook module — a subscription with a signing secret reference
 and event-type filter, and a guarded per-event delivery record."""
 from __future__ import annotations

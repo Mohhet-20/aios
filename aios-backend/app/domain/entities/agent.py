@@ -1,6 +1,6 @@
 """Agent aggregate — a specialized AI worker scoped to a workspace, a model
 preference, an allowed tool list, and a memory scope, per the Agent Engine
-design in Phase 1.
+design in the original architecture.
 """
 
 from __future__ import annotations
@@ -24,6 +24,6 @@ class Agent:
     success_rate: float = 0.0
 
     def is_permitted_tool(self, tool_id: str) -> bool:
-        """Enforces the Tool Engine's permission-scoping rule from Phase 1:
+        """Enforces the Tool Engine's permission-scoping rule from the original architecture:
         an agent may only invoke tools explicitly in its allowlist."""
         return tool_id in self.allowed_tool_ids

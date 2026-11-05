@@ -2,7 +2,7 @@
 released -> deprecated/yanked lifecycle every AIOS release flows
 through. Every status transition is driven through the ephemeral
 `Release` domain entity (loaded fresh from the ORM row, transitioned,
-copied back) — the same pattern used across every prior AIOS platform
+copied back) — the same pattern used across every other AIOS platform
 for resources whose lifecycle carries real domain logic."""
 from __future__ import annotations
 

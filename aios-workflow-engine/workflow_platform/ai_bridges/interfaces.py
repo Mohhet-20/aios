@@ -3,7 +3,7 @@ PROMPT, MEMORY_READ, MEMORY_WRITE, RETRIEVER, KNOWLEDGE_SEARCH,
 DOCUMENT_PARSER, FUNCTION_CALL). The Workflow Engine depends only on
 these Protocols — never on the Agent/Prompt/Memory/Knowledge/Tool
 Platforms directly — the same deliberate boundary the Memory Platform
-drew around its own sibling-platform integrations in Phase 7.
+drew around its own sibling-platform integrations in the memory platform.
 
 Task 87 (Execution Engine) defines these interfaces and wires a minimal,
 deterministic in-process reference implementation (`reference_bridges.py`)

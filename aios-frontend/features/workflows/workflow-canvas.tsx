@@ -24,7 +24,7 @@ const nodeTypes = { workflowNode: WorkflowNode };
 /**
  * Visual workflow canvas built on React Flow. Nodes represent Agent/Tool/
  * Condition/Human/Start/End steps per the Workflow Engine's step contract
- * (Phase 1, Step Workflow Engine); edges represent control flow, optionally
+ * (the original architecture, Step Workflow Engine); edges represent control flow, optionally
  * labeled with a branch condition (e.g. "yes"/"no").
  */
 export function WorkflowCanvas({ workflow }: { workflow: WorkflowDefinition }) {

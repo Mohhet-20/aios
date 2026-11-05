@@ -1,7 +1,7 @@
-// Deterministic mock data powering the UI. Phase 2 is frontend-only per the
+// Deterministic mock data powering the UI. The console is frontend-only per the
 // scope boundary ("do NOT generate backend APIs") — this module stands in for
 // the real API responses the services/ layer will fetch once the backend
-// (Phase 3+) exists. Every mock shape matches types/index.ts exactly so
+// (the core backend+) exists. Every mock shape matches types/index.ts exactly so
 // swapping this for a real fetch later is a one-line change in services/.
 
 import type {

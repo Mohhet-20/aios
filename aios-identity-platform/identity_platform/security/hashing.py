@@ -1,6 +1,6 @@
 """Password hashing via stdlib `hashlib.pbkdf2_hmac` — no third-party
 crypto dependency, consistent with the "genuinely computed, no
-fabrication" ethos carried through every prior AIOS platform. Format:
+fabrication" ethos carried through every other AIOS platform. Format:
 `pbkdf2_sha256$<iterations>$<salt_hex>$<hash_hex>`, so the iteration
 count and salt travel with the hash and a future increase to
 `_ITERATIONS` doesn't break verification of hashes written under a

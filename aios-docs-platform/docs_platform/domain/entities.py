@@ -1,5 +1,5 @@
 """Pure-Python domain entities with guarded state machines — no ORM
-imports, mirroring every prior AIOS platform's domain layer.
+imports, mirroring every other AIOS platform's domain layer.
 
 Two distinct transition graphs live here: the shared `JobStatus`
 queued -> running -> completed/failed shape (used only by

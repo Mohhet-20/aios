@@ -1,7 +1,7 @@
 """Document ingestion pipeline: chunk -> embed -> index. Chunking/parsing
 logic (PDF/DOCX/HTML extraction) is infrastructure work independent of AI
 model logic and could be implemented today; it's left as a stub alongside
-the embedding step for this phase so the whole pipeline lands together in
+the embedding step for now so the whole pipeline lands together in
 one later pass rather than half now, half later."""
 
 from app.logging.setup import get_logger

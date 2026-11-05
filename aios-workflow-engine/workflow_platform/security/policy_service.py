@@ -1,5 +1,5 @@
 """Execution Policies and Approval Policies — the two policy surfaces
-Phase 8 calls out by name, distinct from RBAC (who has what role) and
+The workflow engine calls out by name, distinct from RBAC (who has what role) and
 from Governance's audit trail (what happened). An Execution Policy
 answers "is this principal allowed to start/control this execution
 right now"; an Approval Policy answers "does this approval request meet

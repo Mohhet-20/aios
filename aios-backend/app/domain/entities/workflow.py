@@ -1,5 +1,5 @@
 """Workflow execution aggregate — models the execution state machine
-described in the Phase 1 Workflow Engine design (pending -> running ->
+described in the original Workflow Engine design (pending -> running ->
 completed/failed/cancelled, with an optional waiting-for-human pause).
 """
 

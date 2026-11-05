@@ -2,7 +2,7 @@
 detection built entirely on top of the metrics and tracing modules —
 this service adds no new tables of its own, it's a read-side
 aggregation layer, the same "compute on demand from real data, never
-cache" discipline every prior AIOS platform's observability layer uses.
+cache" discipline every other AIOS platform's observability layer uses.
 
 Capacity trend analysis intentionally lives in `capacity/
 forecast_service.py`, not here — this service answers "why is it slow

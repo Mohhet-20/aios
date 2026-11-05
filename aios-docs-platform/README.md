@@ -1,10 +1,10 @@
 # AIOS Enterprise Documentation, Knowledge Portal & Learning Platform
 
-Phase 20 of the AIOS build. Package `docs_platform`, table prefix `doc_`. Delivered as `aios-docs-platform.zip`.
+Package `docs_platform`, table prefix `doc_`. Delivered as `aios-docs-platform.zip`.
 
 ## What this is
 
-The official source of truth for the entire AI Operating System: a documentation core spanning 15 doc types (architecture, backend, frontend, api, sdk, workflow, agent, prompt, knowledge, infrastructure, deployment, security, developer, admin, enterprise_customer), API/SDK documentation across REST/GraphQL/WebSocket/streaming and 10 SDK targets with an automated generation-job engine, an architecture portal (diagrams + technology stack), a knowledge base across 9 article types, a role-based learning platform (tutorials, learning paths, enrollment/progress tracking), a retrieval-based AI documentation assistant, an enterprise search platform, versioning & release notes, collaboration (comments, reviews, audit trail), documentation analytics, and RBAC-backed security & governance. Built with the same clean/layered architecture as every prior AIOS platform: pure-Python domain entities with guarded state machines, a repository/unit-of-work layer, a service layer, and a FastAPI REST layer.
+The official source of truth for the entire AI Operating System: a documentation core spanning 15 doc types (architecture, backend, frontend, api, sdk, workflow, agent, prompt, knowledge, infrastructure, deployment, security, developer, admin, enterprise_customer), API/SDK documentation across REST/GraphQL/WebSocket/streaming and 10 SDK targets with an automated generation-job engine, an architecture portal (diagrams + technology stack), a knowledge base across 9 article types, a role-based learning platform (tutorials, learning paths, enrollment/progress tracking), a retrieval-based AI documentation assistant, an enterprise search platform, versioning & release notes, collaboration (comments, reviews, audit trail), documentation analytics, and RBAC-backed security & governance. Built with the same clean/layered architecture as every other AIOS platform: pure-Python domain entities with guarded state machines, a repository/unit-of-work layer, a service layer, and a FastAPI REST layer.
 
 **Out of scope by design:** release packaging and a hosted demo environment.
 
@@ -12,7 +12,7 @@ The official source of truth for the entire AI Operating System: a documentation
 
 Identical pattern to every sibling AIOS platform:
 
-- `domain/` — pure-Python entities (`GenerationJob`, `DocPage`) with guarded `_transition()` state machines over enums, no ORM imports. `GenerationJob` shares the generic queued → running → completed/failed shape every prior platform's job lifecycle uses; `DocPage` has its own bespoke editorial lifecycle (draft → in_review → published → archived/deprecated) since editorial semantics don't map onto generic start/complete/fail. Simpler status-only resources (KB articles, enrollments, reviews) are guarded directly in-service instead, the same "simple status field" precedent every prior platform established.
+- `domain/` — pure-Python entities (`GenerationJob`, `DocPage`) with guarded `_transition()` state machines over enums, no ORM imports. `GenerationJob` shares the generic queued → running → completed/failed shape every other platform's job lifecycle uses; `DocPage` has its own bespoke editorial lifecycle (draft → in_review → published → archived/deprecated) since editorial semantics don't map onto generic start/complete/fail. Simpler status-only resources (KB articles, enrollments, reviews) are guarded directly in-service instead, the same "simple status field" precedent every other platform established.
 - `models/` — SQLAlchemy 2.0 async ORM models, 23 tables across 11 files (`doc_` prefix).
 - `repositories/` — one repository per model plus a `RepositoryRegistry` unit-of-work that lazily shares a single `AsyncSession`.
 - Service modules — one directory per domain, each holding the orchestrating business logic.
@@ -45,7 +45,7 @@ Identical pattern to every sibling AIOS platform:
 
 ## Concurrency
 
-One commit-spanning `asyncio.Lock` sequence, the same pattern established across every prior AIOS platform for check-then-act races that span multiple statements (separate callers own separate DB connections; SQLite only makes a write visible to others once committed — and the lock must be held until that commit happens, not just until the row is flushed, or a waiting caller can still observe pre-commit state):
+One commit-spanning `asyncio.Lock` sequence, the same pattern established across every other AIOS platform for check-then-act races that span multiple statements (separate callers own separate DB connections; SQLite only makes a write visible to others once committed — and the lock must be held until that commit happens, not just until the row is flushed, or a waiting caller can still observe pre-commit state):
 
 - `DocSpaceService.register_space` — get-or-create by (`tenant_id`, `key`), locked per `tenant_id:key`.
 
@@ -59,7 +59,7 @@ Proven under real concurrent load in `tests/performance/test_concurrency.py`, wh
 
 ## Disclosed scope boundaries
 
-Consistent with every prior AIOS platform's honest-gap posture:
+Consistent with every other AIOS platform's honest-gap posture:
 
 - The AI Documentation Assistant is a retrieval-and-extract system (keyword-overlap scoring + extractive summarization), not LLM-backed. `AssistantService` is documented as a drop-in replacement point for a future real LLM call — the confidence-thresholding and candidate-pool-restriction logic around it would stay the same either way.
 - `GenerationJobService.run_job` does not itself introspect a live codebase, database schema, or dependency graph — it orchestrates the job lifecycle and calls an injectable `generator` callable. The REST surface doesn't supply one, so `POST /generation-jobs/{id}/run` always produces the honest `{"generated": False, ...}` result. Wiring a real generator (e.g., one that walks the actual `docs_platform` package and models) is a natural next step, not a currently-shipped capability.

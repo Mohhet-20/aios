@@ -15,7 +15,7 @@ class PluginModel(IdMixin, AuditMixin, Base):
 
 
 class ToolModel(IdMixin, AuditMixin, Base):
-    """The Tool Engine's registry (Phase 1, Section 3.6). Separate from
+    """The Tool Engine's registry (the original architecture, Section 3.6). Separate from
     `PluginModel` because a plugin can bundle multiple tools, and tools are
     referenced directly by `AgentModel.allowed_tool_ids`."""
 

@@ -8,7 +8,7 @@ Reasoning Viewer frontend surfaces read straight from these).
 `run_reflection_loop` is where this actually changes behavior, not just
 records it: it re-runs the worker agent with the prior critique injected
 as extra context when verification fails, up to `max_iterations` times —
-the self-correction loop the spec calls for, built on the same
+the self-correction loop the design calls for, built on the same
 AgentExecutor primitive the orchestration engine uses, not a parallel
 execution path.
 """

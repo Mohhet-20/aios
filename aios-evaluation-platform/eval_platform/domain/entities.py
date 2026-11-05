@@ -1,5 +1,5 @@
 """Pure-Python domain aggregates — no ORM/SQLAlchemy imports here, same
-separation every prior AIOS platform uses. `Evaluation` and `Dataset`
+separation every other AIOS platform uses. `Evaluation` and `Dataset`
 own their identity lifecycle (draft/active/deprecated/archived,
 draft/published/archived); `EvaluationRun` and `BenchmarkRun` share the
 same run-time state machine (`RunStatus`) since both are "execute

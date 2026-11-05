@@ -3,7 +3,7 @@
 calls, API calls, CLI commands, plugin installs, webhook deliveries,
 developer activity, package downloads, and API errors — via an
 `event_type` discriminator rather than eight separate tables, mirroring
-the generic time-series pattern used by every prior AIOS platform's
+the generic time-series pattern used by every other AIOS platform's
 observability module. `developer_analytics_sample_rate` controls what
 fraction of events actually get persisted; the sampling decision is
 injectable (`rand=`) so tests never depend on real randomness."""

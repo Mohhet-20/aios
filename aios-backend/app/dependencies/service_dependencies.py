@@ -99,7 +99,9 @@ def get_user_service(session: AsyncSession = Depends(get_db_session, scope="func
     return UserService(UserRepository(session))
 
 
-def get_organization_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> OrganizationService:
+def get_organization_service(
+    session: AsyncSession = Depends(get_db_session, scope="function"),
+) -> OrganizationService:
     return OrganizationService(OrganizationRepository(session), OrganizationMembershipRepository(session))
 
 
@@ -107,7 +109,9 @@ def get_team_service(session: AsyncSession = Depends(get_db_session, scope="func
     return TeamService(TeamRepository(session), TeamMembershipRepository(session))
 
 
-def get_workspace_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> WorkspaceService:
+def get_workspace_service(
+    session: AsyncSession = Depends(get_db_session, scope="function"),
+) -> WorkspaceService:
     return WorkspaceService(WorkspaceRepository(session))
 
 
@@ -127,7 +131,9 @@ def get_model_service(session: AsyncSession = Depends(get_db_session, scope="fun
     return ModelService(ModelRepository(session))
 
 
-def get_workflow_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> WorkflowService:
+def get_workflow_service(
+    session: AsyncSession = Depends(get_db_session, scope="function"),
+) -> WorkflowService:
     return WorkflowService(
         WorkflowRepository(session), WorkflowExecutionRepository(session), event_bus, worker_pool
     )
@@ -151,15 +157,21 @@ def get_memory_service(session: AsyncSession = Depends(get_db_session, scope="fu
     )
 
 
-def get_evaluation_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> EvaluationService:
+def get_evaluation_service(
+    session: AsyncSession = Depends(get_db_session, scope="function"),
+) -> EvaluationService:
     return EvaluationService(EvaluationRepository(session), event_bus, worker_pool)
 
 
-def get_knowledge_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> KnowledgeService:
+def get_knowledge_service(
+    session: AsyncSession = Depends(get_db_session, scope="function"),
+) -> KnowledgeService:
     return KnowledgeService(KnowledgeCollectionRepository(session))
 
 
-def get_document_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> DocumentService:
+def get_document_service(
+    session: AsyncSession = Depends(get_db_session, scope="function"),
+) -> DocumentService:
     return DocumentService(DocumentRepository(session), KnowledgeCollectionRepository(session), worker_pool)
 
 
@@ -167,11 +179,15 @@ def get_dataset_service(session: AsyncSession = Depends(get_db_session, scope="f
     return DatasetService(DatasetRepository(session))
 
 
-def get_experiment_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> ExperimentService:
+def get_experiment_service(
+    session: AsyncSession = Depends(get_db_session, scope="function"),
+) -> ExperimentService:
     return ExperimentService(ExperimentRepository(session))
 
 
-def get_conversation_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> ConversationService:
+def get_conversation_service(
+    session: AsyncSession = Depends(get_db_session, scope="function"),
+) -> ConversationService:
     return ConversationService(ConversationRepository(session), ConversationMessageRepository(session))
 
 
@@ -183,11 +199,15 @@ def get_monitoring_service() -> MonitoringService:
     return MonitoringService(worker_pool)
 
 
-def get_notification_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> NotificationService:
+def get_notification_service(
+    session: AsyncSession = Depends(get_db_session, scope="function"),
+) -> NotificationService:
     return NotificationService(NotificationRepository(session), event_bus)
 
 
-def get_configuration_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> ConfigurationService:
+def get_configuration_service(
+    session: AsyncSession = Depends(get_db_session, scope="function"),
+) -> ConfigurationService:
     return ConfigurationService(ConfigurationRepository(session))
 
 
@@ -199,5 +219,7 @@ def get_audit_service(session: AsyncSession = Depends(get_db_session, scope="fun
     return AuditService(AuditRepository(session))
 
 
-def get_api_key_repository(session: AsyncSession = Depends(get_db_session, scope="function")) -> ApiKeyRepository:
+def get_api_key_repository(
+    session: AsyncSession = Depends(get_db_session, scope="function"),
+) -> ApiKeyRepository:
     return ApiKeyRepository(session)

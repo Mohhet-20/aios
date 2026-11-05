@@ -4,7 +4,7 @@ need different signals (a latency metric needs `latency_ms`, a
 groundedness metric needs `context_documents`); a metric raises
 `MetricComputationError` when the field it needs is missing rather than
 fabricating a score, honoring the observability-honesty principle
-carried through every prior AIOS platform."""
+carried through every other AIOS platform."""
 from __future__ import annotations
 
 from dataclasses import dataclass, field

@@ -2,7 +2,7 @@
 (global, organization, workspace, user, experiment), a base
 enabled/rollout-percentage state guarded directly here (a "simple
 status field" resource — no dedicated domain entity, the same
-precedent used across every prior AIOS platform for resources whose
+precedent used across every other AIOS platform for resources whose
 lifecycle is just a couple of independent fields), per-target
 overrides that take precedence over the base state, and an emergency
 kill switch that force-disables a flag regardless of its rollout

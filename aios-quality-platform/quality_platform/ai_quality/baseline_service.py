@@ -2,7 +2,7 @@
 that regression scans compare fresh evaluations against. `set_baseline`
 is an upsert behind a commit-spanning `asyncio.Lock` keyed on
 (tenant_id, dimension, subject_ref) — the same get-or-create-under-lock
-pattern established across every prior AIOS platform, including the
+pattern established across every other AIOS platform, including the
 mid-lock commit needed so a waiting caller's read can't observe a
 still-uncommitted insert from a separate DB connection."""
 from __future__ import annotations

@@ -1,5 +1,5 @@
 """Application lifecycle events (startup/shutdown), wired via FastAPI's
-`lifespan` context manager. Added during the Phase 24 production-hardening
+`lifespan` context manager. Added during the production-hardening
 pass: previously this platform's FastAPI app had no lifespan hook at all,
 so schema creation only ever happened inside tests (via the `repos`
 fixture/`init_models` call) and the database engine connection pool was

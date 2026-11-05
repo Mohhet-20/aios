@@ -1,6 +1,6 @@
 """In-process async event bus.
 
-This is the "Future Event Bus integration" seam called out in Phase 1:
+This is the "Future Event Bus integration" seam called out in the original architecture:
 `publish()`/`subscribe()` are the only two operations any caller needs, so
 swapping this implementation for a real broker (Kafka, NATS, Redis Streams)
 later touches only this file — every publisher and subscriber in the

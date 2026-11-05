@@ -1,5 +1,5 @@
 """Prompt versioning at the AI Core template layer. This is deliberately
-lighter-weight than the AIOS backend's PromptService (Phase 3): that
+lighter-weight than the AIOS backend's PromptService (the core backend): that
 service owns production-promotion business rules, eval-score gating, and
 durable Postgres storage for a *product feature* called "Prompt Studio."
 This registry just gives any AI Core caller (including that service, or a

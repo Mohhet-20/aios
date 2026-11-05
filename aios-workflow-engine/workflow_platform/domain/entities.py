@@ -1,5 +1,5 @@
 """Pure-Python domain aggregates — no ORM/SQLAlchemy imports here, same
-separation every prior AIOS platform used. `Workflow` owns the
+separation every other AIOS platform used. `Workflow` owns the
 publish/pause/archive lifecycle; `Execution` owns the real run-time
 state machine (the core of the whole engine); `NodeExecution` owns
 per-node retry/approval/timeout transitions; `ApprovalRequest` owns the

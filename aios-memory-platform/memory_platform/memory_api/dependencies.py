@@ -2,9 +2,9 @@
 service, plus AI Core and a minimal caller-identity dependency.
 
 Auth is intentionally minimal here — this platform expects to sit behind
-an already-authenticated gateway (e.g. the AIOS backend from Phase 3,
+an already-authenticated gateway (e.g. the AIOS core backend,
 which owns full JWT/session auth) that forwards the caller's identity
-via the `X-User-Id` header, the same seam every prior AIOS platform in
+via the `X-User-Id` header, the same seam every other AIOS platform in
 this series uses. Every router depends on `get_current_actor_id`, never
 on the header directly, so swapping in real token validation later is a
 one-file change.

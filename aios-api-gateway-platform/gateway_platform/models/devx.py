@@ -1,6 +1,6 @@
 """Developer Experience schema: SDK/client code generation jobs
 (reusing the same guarded queued -> running -> completed/failed
-lifecycle every prior AIOS platform's own code-gen module uses) and a
+lifecycle every other AIOS platform's own code-gen module uses) and a
 record of every API Explorer / testing-console request a developer
 fires against a route, so "try it out" activity is inspectable."""
 from __future__ import annotations

@@ -8,7 +8,7 @@ one execution / to this one workflow's node types," the per-run and
 per-workflow introspection an Execution Timeline, Execution Graph, or
 Node Inspector frontend surface needs. A cross-workflow rollup/BI layer
 (trends over time, workspace-wide dashboards) is explicitly out of scope
-per the Phase 8 scope boundary — that's the (not-yet-built) Analytics
+by design — that's the (not-yet-built) Analytics
 module.
 
 Two metrics this service does NOT report, on purpose, rather than

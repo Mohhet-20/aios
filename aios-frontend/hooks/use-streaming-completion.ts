@@ -3,10 +3,10 @@ import { useCallback, useRef, useState } from "react";
 
 /**
  * Simulates a token-streaming LLM response (what a real implementation would
- * receive over SSE/WebSocket from the AI Core gateway defined in Phase 1).
+ * receive over SSE/WebSocket from the AI Core gateway defined in the original architecture).
  * Consumed by Inference Studio / Model Playground so the streaming UX,
  * cancellation, and incremental-render behavior is real even though the
- * tokens themselves are generated client-side for this frontend-only phase.
+ * tokens themselves are generated client-side in this frontend-only mode.
  */
 export function useStreamingCompletion() {
   const [output, setOutput] = useState("");

@@ -3,7 +3,7 @@ concept — no ORM/framework imports, so business rules (approval workflow,
 branch promotion, eval-score gating) are testable in isolation and can't
 be bypassed by a service that forgets to call the right repository
 method. Mirrors the AIOS backend's Prompt/PromptVersion aggregate
-(Phase 3) but is the flagship, most-detailed aggregate in *this*
+(the core backend) but is the flagship, most-detailed aggregate in *this*
 platform rather than one of many.
 """
 from __future__ import annotations

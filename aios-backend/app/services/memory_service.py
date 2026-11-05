@@ -1,5 +1,5 @@
 """MemoryService — the Memory Engine's three-tier interface (session /
-semantic / episodic) from Phase 1, Section 3.4. Semantic writes generate an
+semantic / episodic) from the architecture design. Semantic writes generate an
 embedding and store it in the vector store; queries embed the query text and
 rank stored items by similarity. Session/episodic writes skip the embedding
 step (queried by scope/recency, not similarity) — mirroring the real design

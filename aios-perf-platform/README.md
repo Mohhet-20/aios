@@ -1,8 +1,8 @@
 # AIOS Enterprise Performance Optimization, Cost Intelligence & Scalability Platform
 
-Phase 22 of the AIOS build. Package `perf_platform`, table prefix `perf_`. Delivered as `aios-perf-platform.zip`.
+Package `perf_platform`, table prefix `perf_`. Delivered as `aios-perf-platform.zip`.
 
-This phase was explicitly **not** a new-feature phase — it is a repository-wide performance audit followed by a dedicated optimization/cost-intelligence toolkit. Two deliverables came out of it, covered in order below: (1) real fixes applied directly to the existing 20 AIOS repositories, and (2) this new platform, which gives every other platform a shared caching layer, LLM cost-intelligence router, cost/budget engine, auto-optimization recommendation engine, and performance observability.
+This platform is explicitly **not** a new feature — it is a repository-wide performance audit followed by a dedicated optimization/cost-intelligence toolkit. Two deliverables came out of it, covered in order below: (1) real fixes applied directly to the existing 20 AIOS repositories, and (2) this new platform, which gives every other platform a shared caching layer, LLM cost-intelligence router, cost/budget engine, auto-optimization recommendation engine, and performance observability.
 
 ## Part 1 — Repository-wide audit and fixes
 
@@ -26,16 +26,16 @@ Every affected platform's full test suite was re-run after each fix (tool-platfo
 
 ### What this is
 
-A shared performance-optimization and cost-intelligence toolkit the rest of AIOS can build on: multi-level caching (an in-process L1 LRU/TTL cache plus a DB-backed L2 layer across all 11 declared cache layers), LLM cost-intelligence model routing (deterministic task-complexity-to-tier selection with org/workspace policy overrides and per-request cost estimation), real-time cost tracking and budget enforcement with threshold alerts, an auto-optimization recommendation engine that mines this platform's own cache/latency/routing/budget signals, and observability (latency percentiles, throughput, benchmark runs) plus a GPU pool inventory for scalability planning. Built with the same clean/layered architecture as every prior AIOS platform: pure-Python domain entities with guarded state machines, a repository/unit-of-work layer, a service layer, and a FastAPI REST layer.
+A shared performance-optimization and cost-intelligence toolkit the rest of AIOS can build on: multi-level caching (an in-process L1 LRU/TTL cache plus a DB-backed L2 layer across all 11 declared cache layers), LLM cost-intelligence model routing (deterministic task-complexity-to-tier selection with org/workspace policy overrides and per-request cost estimation), real-time cost tracking and budget enforcement with threshold alerts, an auto-optimization recommendation engine that mines this platform's own cache/latency/routing/budget signals, and observability (latency percentiles, throughput, benchmark runs) plus a GPU pool inventory for scalability planning. Built with the same clean/layered architecture as every other AIOS platform: pure-Python domain entities with guarded state machines, a repository/unit-of-work layer, a service layer, and a FastAPI REST layer.
 
-**Out of scope by design:** no repository cleanup beyond the targeted fixes described above, no rewrites for cosmetic reasons, no packaging of the overall AIOS meta-project — this platform's own delivery follows the same standard packaging step every prior platform in the series has used.
+**Out of scope by design:** no repository cleanup beyond the targeted fixes described above, no rewrites for cosmetic reasons, no packaging of the overall AIOS meta-project — this platform's own delivery follows the same standard packaging step every other platform in the series has used.
 
 ### Architecture
 
-- `domain/` — pure-Python entities (`BenchmarkRun`, `Recommendation`) with guarded `_transition()` state machines. `BenchmarkRun` shares the generic queued → running → completed/failed job shape every prior platform's job lifecycle uses. `Recommendation` has its own bespoke editorial lifecycle (proposed → accepted → applied, with reject/expire as alternate terminal states) since a cost/perf recommendation is proposed by the engine and then decided by a human or policy, not just run to completion.
+- `domain/` — pure-Python entities (`BenchmarkRun`, `Recommendation`) with guarded `_transition()` state machines. `BenchmarkRun` shares the generic queued → running → completed/failed job shape every other platform's job lifecycle uses. `Recommendation` has its own bespoke editorial lifecycle (proposed → accepted → applied, with reject/expire as alternate terminal states) since a cost/perf recommendation is proposed by the engine and then decided by a human or policy, not just run to completion.
 - `models/` — SQLAlchemy 2.0 async ORM models, 12 tables across 6 files (`perf_` prefix).
 - `repositories/` — one repository per model plus a `RepositoryRegistry` unit-of-work. `repositories/base.py` ships with `get_many()` from the start (see Part 1) rather than needing the audit fix applied to it separately.
-- Service modules — one directory per domain (`caching/`, `routing/`, `cost_intelligence/`, `optimization/`, `observability/`, `scalability/`), most split into a pure `*_rules.py` (zero DB/service imports, unit-testable in isolation) plus a thin DB-backed `*_service.py` shell — the same split every prior platform used for `semver_rules.py`, `targeting_rules.py`, `license_rules.py`, etc.
+- Service modules — one directory per domain (`caching/`, `routing/`, `cost_intelligence/`, `optimization/`, `observability/`, `scalability/`), most split into a pure `*_rules.py` (zero DB/service imports, unit-testable in isolation) plus a thin DB-backed `*_service.py` shell — the same split every other platform used for `semver_rules.py`, `targeting_rules.py`, `license_rules.py`, etc.
 - `perf_api/` — FastAPI Application Factory, versioned routers (40 routes across 6 route groups) + an unversioned `/health` probe, a shared exception-handler layer mapping the 31-class domain exception hierarchy to HTTP status codes, and lightweight ORM→dict serialization.
 - `dependencies/` — FastAPI dependency wiring (DB session → `RepositoryRegistry` → 9 services), plus `X-Tenant-Id`/`X-User-Id` header extraction. This platform expects to sit behind an already-authenticated caller (in practice, the Identity Platform).
 
@@ -55,7 +55,7 @@ A shared performance-optimization and cost-intelligence toolkit the rest of AIOS
 
 ### Concurrency
 
-One commit-spanning `asyncio.Lock` sequence, the same pattern established across every prior AIOS platform for check-then-act races that span multiple statements (separate callers own separate DB connections; SQLite only makes a write visible to others once committed — the lock must be held until that commit happens, not just until the row is flushed, or a waiting caller can still observe pre-commit state):
+One commit-spanning `asyncio.Lock` sequence, the same pattern established across every other AIOS platform for check-then-act races that span multiple statements (separate callers own separate DB connections; SQLite only makes a write visible to others once committed — the lock must be held until that commit happens, not just until the row is flushed, or a waiting caller can still observe pre-commit state):
 
 - `CacheService.set` — get-or-create by (`tenant_id`, `layer`, `key`), locked per `tenant_id:layer:key`.
 
@@ -71,7 +71,7 @@ The two benchmarks in `tests/performance/test_cache_benchmark.py` are the platfo
 
 ### Disclosed scope boundaries
 
-Consistent with every prior AIOS platform's honest-gap posture:
+Consistent with every other AIOS platform's honest-gap posture:
 
 - The cache platform's "redis", "disk", and "cdn" layers are labels on the same DB-backed `CacheEntryModel` store today, not real Redis/filesystem/CDN clients. The `get`/`set`/`invalidate` contract on `CacheService` is exactly what a real per-layer backend would need to implement, so wiring one in is a swap-in behind the same interface, not a redesign — the in-process `LRUTTLCache` (L1) is real and would sit in front of any of them unchanged.
 - Infra cost rates (`gpu_cost_per_hour_usd`, `cpu_cost_per_core_hour_usd`, etc.) and model-tier token pricing in `Settings` are illustrative, deployment-configurable defaults, not pulled live from a cloud billing API or a model provider's current price sheet. `pricing_rules.py` is deliberately rate-agnostic — every function takes the rate from `Settings`, so pointing this at real negotiated rates is a config change, not a code change.
@@ -85,7 +85,7 @@ Consistent with every prior AIOS platform's honest-gap posture:
 
 **Can infrastructure costs be reduced significantly?** Concretely and measurably, yes, for the two mechanisms this platform directly controls: the routing benchmark shows a 96% cost reduction from complexity-aware model selection on a realistic workload mix, and the cache benchmark shows a 3381x latency reduction (which translates directly to compute-time cost reduction for whatever expensive operation sits behind the cache). The GPU underutilization query and budget-near-exhaustion recommendations point at further infra savings but stop short of executing them automatically (disclosed above).
 
-**Can response latency be improved across the stack?** This platform's own contribution is the cache layer (measured) and the latency/SLO tracking to detect regressions elsewhere (P95/P99 against configurable SLOs, feeding the auto-optimization engine's high-latency recommendation). The N+1 fixes applied directly to 8 call sites across 5 other platforms in Part 1 are a second, concrete latency improvement delivered in this phase, independent of this new platform.
+**Can response latency be improved across the stack?** This platform's own contribution is the cache layer (measured) and the latency/SLO tracking to detect regressions elsewhere (P95/P99 against configurable SLOs, feeding the auto-optimization engine's high-latency recommendation). The N+1 fixes applied directly to 8 call sites across 5 other platforms in Part 1 are a second, concrete latency improvement delivered, independent of this new platform.
 
 **Can AI costs be optimized automatically?** Partially, and honestly disclosed as partial: routing is automatic and measurably effective; budget alerting is automatic; but turning a "systematic model-tier over-provisioning" recommendation into an actual policy change is still a human-in-the-loop `apply()` action today, not a closed automatic loop.
 

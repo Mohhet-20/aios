@@ -1,10 +1,10 @@
 # AIOS Enterprise Security, Guardrails & AI Governance Platform
 
-Phase 14 of the AIOS build. Package `security_platform`, table prefix `sec_`. Delivered as `aios-security-platform.zip`.
+Package `security_platform`, table prefix `sec_`. Delivered as `aios-security-platform.zip`.
 
 ## What this is
 
-The security backbone for the AI Operating System: AI guardrails (prompt injection / jailbreak / unsafe-instruction detection, structured output validation, response filtering), data protection (PII detection/redaction, sensitive data classification, DLP), a policy engine with scope-based inheritance, secrets management with real envelope encryption, dynamic risk scoring, threat detection, AI governance (asset lifecycle + approval workflows), security events, an immutable audit log, and compliance tooling (frameworks, evidence, retention, legal holds, consent, data residency). Built with the same clean/layered architecture as every prior AIOS platform: pure-Python domain entities with guarded state machines, a repository/unit-of-work layer, service layer, and a FastAPI REST layer.
+The security backbone for the AI Operating System: AI guardrails (prompt injection / jailbreak / unsafe-instruction detection, structured output validation, response filtering), data protection (PII detection/redaction, sensitive data classification, DLP), a policy engine with scope-based inheritance, secrets management with real envelope encryption, dynamic risk scoring, threat detection, AI governance (asset lifecycle + approval workflows), security events, an immutable audit log, and compliance tooling (frameworks, evidence, retention, legal holds, consent, data residency). Built with the same clean/layered architecture as every other AIOS platform: pure-Python domain entities with guarded state machines, a repository/unit-of-work layer, service layer, and a FastAPI REST layer.
 
 **Out of scope by design:** no Production Infrastructure & MLOps, no Performance Optimization, no Developer SDK.
 
@@ -43,7 +43,7 @@ Identical pattern to every sibling AIOS platform:
 
 ## Concurrency
 
-Three commit-spanning `asyncio.Lock` sequences, the same pattern established across every prior AIOS platform for check-then-act races that span multiple statements (separate callers own separate DB connections; SQLite only makes a write visible to others once committed):
+Three commit-spanning `asyncio.Lock` sequences, the same pattern established across every other AIOS platform for check-then-act races that span multiple statements (separate callers own separate DB connections; SQLite only makes a write visible to others once committed):
 
 - `GovernanceAssetService.register_asset` — idempotent-by-external-ref creation, locked per `tenant_id:asset_type:external_ref_id`.
 - `ApprovalWorkflowService.record_decision` — approval-count threshold crossing, locked per `request_id`.
@@ -57,7 +57,7 @@ All three are proven under real concurrent load in `tests/performance/test_concu
 
 ## Disclosed scope boundaries
 
-Consistent with every prior AIOS platform's honest-gap posture:
+Consistent with every other AIOS platform's honest-gap posture:
 
 - Guardrail and threat detectors are real, working regex/heuristic-pattern detection based on documented attack signatures — not trained ML classifiers.
 - PII detection covers entity types with reliable regex signatures (email, phone, SSN, credit card, IP address); name/address/passport/bank-account/medical-record detection needs NER and isn't attempted.

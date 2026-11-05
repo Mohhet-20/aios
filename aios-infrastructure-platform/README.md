@@ -1,16 +1,16 @@
 # AIOS Enterprise Production Infrastructure & MLOps Platform
 
-Phase 10 of the AIOS build. Package `infra_platform`. This README was reconstructed during the Phase 23 architecture audit — the platform shipped without one; every fact below is verified against the actual source (settings, module docstrings, exceptions, route count, test count), not inferred. Part of the same audit pass, an entirely empty and unreferenced `security_ctrl/` package (just an `__init__.py`, no other content, no imports anywhere) was removed as dead code — confirmed safe by re-running the full suite (still 127 passed) afterward.
+Package `infra_platform`. This README was reconstructed during the documentation audit architecture audit — the platform shipped without one; every fact below is verified against the actual source (settings, module docstrings, exceptions, route count, test count), not inferred. Part of the same audit pass, an entirely empty and unreferenced `security_ctrl/` package (just an `__init__.py`, no other content, no imports anywhere) was removed as dead code — confirmed safe by re-running the full suite (still 127 passed) afterward.
 
 ## What this is
 
-The production infrastructure and MLOps backbone: a container image registry with a build → scan → sign → publish lifecycle, a Kubernetes control plane (clusters, node pools, namespaces, generic K8s resources, HPA/VPA), a CI/CD platform (pipelines, gated runs, releases), model lifecycle management (registry + guarded promotion), experiment tracking, a feature store, generic artifact management, an inference platform (real-time/batch/streaming/async serving with weighted traffic routing), deployment strategies (rolling/canary/blue-green under one guarded lifecycle), generic autoscaling (horizontal/vertical/cluster/GPU/queue-based/predictive/cost-aware as one polymorphic policy table), multi-cloud account/resource pointers, and disaster recovery (backups, snapshots, recovery plans with an RPO/RTO commitment, failover events). Built with the same clean/layered architecture as every prior AIOS platform.
+The production infrastructure and MLOps backbone: a container image registry with a build → scan → sign → publish lifecycle, a Kubernetes control plane (clusters, node pools, namespaces, generic K8s resources, HPA/VPA), a CI/CD platform (pipelines, gated runs, releases), model lifecycle management (registry + guarded promotion), experiment tracking, a feature store, generic artifact management, an inference platform (real-time/batch/streaming/async serving with weighted traffic routing), deployment strategies (rolling/canary/blue-green under one guarded lifecycle), generic autoscaling (horizontal/vertical/cluster/GPU/queue-based/predictive/cost-aware as one polymorphic policy table), multi-cloud account/resource pointers, and disaster recovery (backups, snapshots, recovery plans with an RPO/RTO commitment, failover events). Built with the same clean/layered architecture as every other AIOS platform.
 
 ## Architecture
 
 - `domain/` — pure-Python entities with guarded `_transition()` state machines.
 - `models/` — SQLAlchemy 2.0 async ORM models, 48 tables — the platform leans heavily on polymorphic single-table designs (`ScalingPolicyModel` over `resource_type`/`policy_type`, generic K8s resources over `kind`) rather than one table per resource variant, the same "one table, not seven near-identical ones" pattern used elsewhere in this platform.
-- `repositories/` — one repository per model plus a `RepositoryRegistry` unit-of-work (includes the `get_many()` batch-fetch method added platform-wide during the Phase 22/23 audits).
+- `repositories/` — one repository per model plus a `RepositoryRegistry` unit-of-work (includes the `get_many()` batch-fetch method added platform-wide during the platform-wide audits).
 - Service modules — one directory per domain: `containers/`, `kubernetes/`, `cicd/`, `model_registry/`, `experiments/`, `feature_store/`, `artifacts/`, `inference/`, `deployment/`, `autoscaling/`, `cloud/`, `recovery/`, `observability/`, `security/`.
 - `infra_api/` — FastAPI Application Factory, versioned routers (167 routes) + an unversioned `/health` probe, a shared exception-handler layer mapping the 54-class domain exception hierarchy to HTTP status codes.
 - `dependencies/` — FastAPI dependency wiring (DB session → `RepositoryRegistry` → services).
@@ -53,7 +53,7 @@ Three commit-spanning `asyncio.Lock` sequences — more than most sibling platfo
 
 ## Self-review
 
-This README was written after the fact as part of the Phase 23 documentation-consistency audit. The platform itself was already solid (129 tests, 167 REST routes, three deliberately-placed concurrency locks, ruff-clean); the audit's contribution here was closing the missing-README gap and removing one confirmed-dead empty package.
+This README was written after the fact as part of a documentation-consistency audit. The platform itself was already solid (129 tests, 167 REST routes, three deliberately-placed concurrency locks, ruff-clean); the audit's contribution here was closing the missing-README gap and removing one confirmed-dead empty package.
 
 ## Running it
 

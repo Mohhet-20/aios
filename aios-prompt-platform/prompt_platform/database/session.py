@@ -1,6 +1,6 @@
 """Async SQLAlchemy engine/session factory — same WAL/busy-timeout/NullPool
 fix for file-based SQLite discovered while building the AIOS backend
-(Phase 3), applied proactively here since the failure mode (many
+(the core backend), applied proactively here since the failure mode (many
 short-lived app instances / test clients hitting one file concurrently)
 is identical for this platform's test suite."""
 from __future__ import annotations

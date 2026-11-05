@@ -1,6 +1,6 @@
 """build_auth_headers: turns a decrypted credential's secret material
 into the actual HTTP auth a connector (Task 107's `connectors/`) needs
-to inject — the "Secure Token Injection" half of the spec's
+to inject — the "Secure Token Injection" half of the design's
 AUTHENTICATION section. Kept as pure functions with no DB/session
 access so a connector can call this with whatever `VaultService.get_secret`
 handed it, without needing a repository."""

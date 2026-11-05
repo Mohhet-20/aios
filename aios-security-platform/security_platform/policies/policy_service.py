@@ -1,6 +1,6 @@
 """Policy CRUD and lifecycle. Every rules edit is snapshotted into
 `PolicyVersionModel` before the live row changes — policy history is
-never lost, mirroring the same discipline every prior AIOS platform
+never lost, mirroring the same discipline every other AIOS platform
 applies to prompts/workflows/documents it versions."""
 from __future__ import annotations
 

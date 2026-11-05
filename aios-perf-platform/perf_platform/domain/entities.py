@@ -5,7 +5,7 @@ models so the transition rules are testable without a database.
 
 Two entity shapes in this platform:
 
-`BenchmarkRun` shares the generic job lifecycle every prior platform's
+`BenchmarkRun` shares the generic job lifecycle every other platform's
 job-shaped resource uses: queued -> running -> completed/failed.
 
 `Recommendation` has its own bespoke editorial-style lifecycle since a

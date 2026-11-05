@@ -5,7 +5,7 @@ existing definition (optionally refreshing its metadata) rather than
 erroring, mirroring the topic/connector registration precedent used
 throughout this platform family. Guarded with an in-process
 `asyncio.Lock` per `(tenant_id, key)`, the same commit-spanning-lock
-pattern used across every prior AIOS platform's own "upsert by
+pattern used across every other AIOS platform's own "upsert by
 identity" methods, since two concurrent callers registering the same
 metric key for the first time would otherwise both observe no
 existing row and both insert, producing a duplicate catalog entry."""

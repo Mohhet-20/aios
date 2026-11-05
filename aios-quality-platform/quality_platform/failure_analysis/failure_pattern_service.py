@@ -1,7 +1,7 @@
 """Recurring failure pattern tracking. `record_occurrence` is a
 get-or-increment upsert keyed on (tenant_id, pattern_type, subject_ref)
 behind a commit-spanning `asyncio.Lock` — the same pattern established
-across every prior AIOS platform, with the mid-lock commit needed so a
+across every other AIOS platform, with the mid-lock commit needed so a
 waiting caller's read can't observe a still-uncommitted insert/update
 from a separate DB connection. A pattern is "recurring" once its
 occurrence count crosses `failure_pattern_min_occurrences`."""

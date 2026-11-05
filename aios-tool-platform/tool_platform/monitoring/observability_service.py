@@ -6,7 +6,7 @@ structured `ExecutionLogModel` rows it writes via `_log`. This is
 Observability, not Analytics: per-execution and per-tool introspection
 an Execution Console / Monitoring Dashboard frontend surface needs, not
 a cross-workspace BI rollup layer — that's explicitly out of scope per
-the Phase 9 scope boundary.
+the tool platform scope boundary.
 
 Honesty principle carried over from the sandbox and execution engine
 modules: CPU seconds, peak memory, and network bytes are reported only

@@ -1,5 +1,5 @@
 """Async SQLAlchemy engine/session factory — the WAL/busy-timeout/
-NullPool fix discovered while building the AIOS backend (Phase 3),
+NullPool fix discovered while building the AIOS backend (the core backend),
 reapplied proactively here (as it was for the Prompt Platform) since the
 failure mode — many short-lived sessions hitting one SQLite file
 concurrently — is identical for this platform's test suite and its

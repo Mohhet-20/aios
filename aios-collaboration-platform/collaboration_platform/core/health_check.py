@@ -4,7 +4,7 @@ unreachable database never causes a needless pod restart). `/health/ready`
 answers "can this instance serve traffic" (checks the database
 connection — used for k8s readiness probes / load balancer health
 checks). Same pattern as `aios-backend`'s `app/monitoring/health.py`,
-applied here during the Phase 24 production-hardening pass since every
+applied here during the production-hardening pass since every
 domain platform previously exposed only a single unconditional
 `/health` -> {{"status": "ok"}} that never actually checked anything."""
 from __future__ import annotations

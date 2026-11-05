@@ -1,7 +1,7 @@
 """Health monitoring. `HealthCheckResultModel` is an append-only time
 series (one row per check run); current status is deliberately NOT a
 cached column anywhere — it's always derived from the latest result per
-component, the same anti-drift discipline every prior AIOS platform's
+component, the same anti-drift discipline every other AIOS platform's
 observability layer follows."""
 from __future__ import annotations
 

@@ -1,7 +1,7 @@
 """Domain enums for the Workflow Orchestration Engine.
 
 Two deliberately orthogonal axes recur throughout this schema, the same
-lesson every prior AIOS platform in this series learned the hard way:
+lesson every other AIOS platform in this series learned the hard way:
 `NodeType` (what kind of step) is independent of a workflow's
 `WorkflowCategory` (what kind of business process it represents) — a
 RESEARCH workflow and a DOCUMENT_PROCESSING workflow can both use an

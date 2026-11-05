@@ -2,7 +2,7 @@
 against the same SQLite-file-backed database, not the single rollback-
 isolated `repos` fixture every other test file uses. This is the same
 kind of test that caught the Tool Platform's governance/session-lock
-regression in Phase 9: a bug only shows up under real parallel writers,
+regression in the tool platform: a bug only shows up under real parallel writers,
 never under sequential unit tests."""
 from __future__ import annotations
 

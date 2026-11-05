@@ -1,4 +1,4 @@
-"""Declarative base + shared mixins — identical pattern to every prior AIOS platform."""
+"""Declarative base + shared mixins — identical pattern to every other AIOS platform."""
 from __future__ import annotations
 
 import uuid

@@ -2,7 +2,7 @@
 versioning workflow (approval/promotion state machine) needs the full
 domain aggregate — everything else in the platform reads/writes the ORM
 models directly through repositories, same simplification the AIOS
-backend (Phase 3) documented for its own flagship aggregate.
+backend (the core backend) documented for its own flagship aggregate.
 """
 from __future__ import annotations
 

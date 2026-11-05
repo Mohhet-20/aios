@@ -1,9 +1,9 @@
 """Generic async repository — manual optimistic locking, soft delete,
-pagination. Same pattern as every prior AIOS platform.
+pagination. Same pattern as every other AIOS platform.
 
 Any bulk `delete_older_than`/retention-sweep statement added to a
 tenant-scoped repository in this platform should use
-`.execution_options(synchronize_session=False)` — a prior AIOS platform
+`.execution_options(synchronize_session=False)` — another AIOS platform
 hit a real `TypeError: can't compare offset-naive and offset-aware
 datetimes` from SQLAlchemy's default "evaluate" session-sync strategy
 re-checking a bulk DELETE's WHERE clause in pure Python against
@@ -49,7 +49,7 @@ class SQLAlchemyRepository(Generic[ModelType]):
     async def get_many(self, ids: list[str], *, include_deleted: bool = False) -> list[ModelType]:
         """Batch-fetch by primary key in a single query — replaces the
         N+1 "loop calling await repo.get(id) per item" pattern (see the
-        Phase 22 performance audit). Preserves the input order and
+        performance audit). Preserves the input order and
         silently skips ids with no matching row, matching the behavior
         of the loops it replaces."""
         if not ids:

@@ -1,7 +1,7 @@
 """Vector store interface — the Memory Engine's semantic-tier persistence
 seam. `InMemoryVectorStore` is the dev/test implementation; a production
 deployment binds this same interface to pgvector/Qdrant/Pinecone (per the
-Phase 1 tech-stack decision) with zero changes to `MemoryService` or
+original tech-stack decision) with zero changes to `MemoryService` or
 `VectorService`.
 """
 

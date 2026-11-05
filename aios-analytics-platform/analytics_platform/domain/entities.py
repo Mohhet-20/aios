@@ -1,10 +1,10 @@
 """Pure-Python domain entities with guarded state machines — no ORM
 imports. Each entity mirrors the `status` column on its ORM model;
 services translate ORM <-> entity, apply a transition, and persist the
-resulting status back. Same pattern as every prior AIOS platform.
+resulting status back. Same pattern as every other AIOS platform.
 Simpler status-only resources (KPI definitions, metric definitions,
 report/security policies) are guarded directly in-service instead —
-the same precedent set by every prior platform for lightly-stated
+the same precedent set by every other platform for lightly-stated
 resources."""
 from __future__ import annotations
 

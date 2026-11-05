@@ -28,7 +28,7 @@ class TraceService:
 
     async def finalize_trace(self, tenant_id: str, trace_id: str) -> TraceModel:
         """Recomputes the trace summary from its real spans — the same
-        anti-drift discipline every prior AIOS platform's derived-metric
+        anti-drift discipline every other AIOS platform's derived-metric
         fields follow. Never trusts a caller to report span_count or
         duration directly."""
         spans = await self.repos.spans.list_for_trace(tenant_id, trace_id)

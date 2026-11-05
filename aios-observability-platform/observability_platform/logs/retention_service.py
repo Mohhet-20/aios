@@ -1,4 +1,4 @@
-"""Log retention/rotation/archiving. This build's "archiving" is
+"""Log retention/rotation/archiving. Here "archiving" is
 honestly scoped: `sweep_expired` hard-deletes rows past the configured
 retention window in one bulk statement (the real per-tenant policy, if
 set, overrides the platform default — see `RetentionPolicyRepository`).

@@ -1,6 +1,6 @@
 """End-to-end HTTP tests driving every module through the real FastAPI
 app (in-process ASGI transport, no real network) — the same pattern
-used across every prior AIOS platform's e2e suite."""
+used across every other AIOS platform's e2e suite."""
 from __future__ import annotations
 
 import pytest

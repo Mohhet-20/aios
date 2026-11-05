@@ -1,6 +1,6 @@
 """Convenience service wiring EmbeddingEngine + VectorStore together: embed
 a query, search the store, return ranked matches. Downstream memory/
-knowledge-base subsystems (Phase 5+) are expected to build on this rather
+knowledge-base subsystems (later) are expected to build on this rather
 than re-plumbing embed-then-query themselves.
 """
 from __future__ import annotations

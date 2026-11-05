@@ -4,7 +4,7 @@ preview, enterprise dedicated) a deployment or rollout can target.
 
 `register_environment` is a get-or-create upsert keyed on
 (tenant_id, name) behind a commit-spanning `asyncio.Lock` — the same
-pattern established across every prior AIOS platform for check-then-
+pattern established across every other AIOS platform for check-then-
 act races that span multiple statements (separate callers own
 separate DB connections; SQLite only makes a write visible to others
 once committed, and the lock must be held until that commit happens,

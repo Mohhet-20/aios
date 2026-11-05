@@ -61,7 +61,7 @@ class ToolExecutionEngine:
         self._session_lock = asyncio.Lock()
         # Governance is entirely optional injection, same pattern the Agent
         # Platform's orchestrator uses for its PolicyEngine/ApprovalService:
-        # a caller that doesn't wire these gets the platform's pre-Phase-9
+        # a caller that doesn't wire these gets the platform's pre-original
         # behavior exactly, unchanged.
         self.policy_engine = policy_engine
         self.approval_service = approval_service

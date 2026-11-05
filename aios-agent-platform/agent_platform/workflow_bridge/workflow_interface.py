@@ -1,6 +1,6 @@
 """Workflow Integration: a clean interface for pause/resume/retry/
 checkpointing that a future, standalone Workflow Engine plugs into. Per
-the Phase 6 scope boundary ("Do NOT build the Workflow Engine"), this
+the agent platform scope boundary ("Do NOT build the Workflow Engine"), this
 platform defines the contract and ships one reference implementation that
 makes the boundary explicit — calling any of these methods today raises
 `WorkflowEngineNotIntegratedError`, not because the capability is
@@ -47,7 +47,7 @@ class NotIntegratedWorkflowEngine(WorkflowEngine):
     what's real today (TaskOrchestrator) versus what this seam is for."""
 
     _MESSAGE = (
-        "No Workflow Engine is integrated in this platform (Phase 6 scope boundary). "
+        "No Workflow Engine is integrated in this platform (out of scope for this platform). "
         "For task-execution-scoped interruption and recovery, use TaskOrchestrator.cancel/checkpoint/recover instead."
     )
 

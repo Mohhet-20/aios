@@ -1,5 +1,5 @@
 """ORM <-> domain-aggregate bridge for `User` — same pattern as every
-prior AIOS platform's per-module mapper (e.g. tool_platform's
+other AIOS platform's per-module mapper (e.g. tool_platform's
 `credentials/mappers.py`)."""
 from __future__ import annotations
 

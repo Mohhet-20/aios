@@ -1,10 +1,10 @@
 # AIOS Enterprise Developer Platform & SDK Ecosystem
 
-Phase 16 of the AIOS build. Package `developer_platform`, table prefix `dev_`. Delivered as `aios-developer-platform.zip`.
+Package `developer_platform`, table prefix `dev_`. Delivered as `aios-developer-platform.zip`.
 
 ## What this is
 
-The developer-facing surface of the AI Operating System: API key issuance and rate limiting, a versioned OpenAPI-compatible API layer, a real Python reference SDK, a Click-based CLI, a plugin SDK with a guarded manifest → signed → published lifecycle, an extension point framework, a webhook platform with HMAC-signed delivery and retry, an MCP (Model Context Protocol) integration control plane, an OpenAPI-driven code generation engine, a developer portal with ephemeral sandboxes, a generic multi-type package registry, developer usage analytics, and developer-facing security (RBAC, opaque secret references, plugin isolation policy, OAuth scope negotiation). Built with the same clean/layered architecture as every prior AIOS platform: pure-Python domain entities with guarded state machines, a repository/unit-of-work layer, service layer, and a FastAPI REST layer.
+The developer-facing surface of the AI Operating System: API key issuance and rate limiting, a versioned OpenAPI-compatible API layer, a real Python reference SDK, a Click-based CLI, a plugin SDK with a guarded manifest → signed → published lifecycle, an extension point framework, a webhook platform with HMAC-signed delivery and retry, an MCP (Model Context Protocol) integration control plane, an OpenAPI-driven code generation engine, a developer portal with ephemeral sandboxes, a generic multi-type package registry, developer usage analytics, and developer-facing security (RBAC, opaque secret references, plugin isolation policy, OAuth scope negotiation). Built with the same clean/layered architecture as every other AIOS platform: pure-Python domain entities with guarded state machines, a repository/unit-of-work layer, service layer, and a FastAPI REST layer.
 
 **Out of scope by design:** no Enterprise Analytics, no Final Documentation, no Release Candidate.
 
@@ -49,7 +49,7 @@ Identical pattern to every sibling AIOS platform:
 
 ## Concurrency
 
-Three commit-spanning `asyncio.Lock` sequences, the same pattern established across every prior AIOS platform for check-then-act races that span multiple statements (separate callers own separate DB connections; SQLite only makes a write visible to others once committed — and the lock must be held until that commit happens, not just until the row is flushed, or a waiting caller can still observe pre-commit state):
+Three commit-spanning `asyncio.Lock` sequences, the same pattern established across every other AIOS platform for check-then-act races that span multiple statements (separate callers own separate DB connections; SQLite only makes a write visible to others once committed — and the lock must be held until that commit happens, not just until the row is flushed, or a waiting caller can still observe pre-commit state):
 
 - `PluginLifecycleService.register_plugin` — get-or-create by plugin name, locked per `tenant_id:name`.
 - `PackageRegistryService.register_package` / `.publish_version` — get-or-create by package identity and check-then-insert by version, locked per `tenant_id:name:package_type` and `tenant_id:package_id:version` respectively.
@@ -63,7 +63,7 @@ All three are proven under real concurrent load in `tests/performance/test_concu
 
 ## Disclosed scope boundaries
 
-Consistent with every prior AIOS platform's honest-gap posture:
+Consistent with every other AIOS platform's honest-gap posture:
 
 - MCP Integration is a control plane that tracks servers/sessions/capabilities — it does not itself speak the stdio/HTTP/SSE wire protocol. `McpTransportAdapter` is the seam a real transport implementation plugs into.
 - Plugin isolation is policy *evaluation* (allow/deny-list permission checking against a declared manifest), not runtime sandbox enforcement — actual process/network isolation for a running plugin is out of scope for this control plane.

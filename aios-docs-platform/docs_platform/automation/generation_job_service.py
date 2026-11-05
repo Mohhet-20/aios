@@ -4,7 +4,7 @@ docs, config docs, SDK docs, changelogs, dependency reports,
 architecture reports, code reference). This service is the control
 plane for automation — it does not itself introspect a live codebase
 or database schema (that's genuinely out of scope for a docs-platform
-control plane, the same disclosed boundary every prior AIOS platform
+control plane, the same disclosed boundary every other AIOS platform
 draws around "we orchestrate, we don't reimplement the underlying
 tool"). `run_job()` is the convenience orchestrator most callers want:
 it starts the job, hands control to a caller-supplied async generator

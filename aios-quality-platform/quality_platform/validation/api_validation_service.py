@@ -2,7 +2,7 @@
 SDK compatibility checks. These are synchronous pass/fail checks, not
 long-running jobs (no queued/running/completed/failed lifecycle) --
 `run_validation` records its outcome immediately, the same "check now,
-record the result" shape used across every prior AIOS platform for
+record the result" shape used across every other AIOS platform for
 genuinely instantaneous validations."""
 from __future__ import annotations
 

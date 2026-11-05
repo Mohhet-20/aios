@@ -14,7 +14,7 @@ interface VariablesPanelProps {
 /** Extracts {{variable}} placeholders from a prompt template and renders a
  *  live input for each — used to preview a rendered prompt without leaving
  *  the studio. Mirrors the Prompt Engine's `render(vars, targetModel)`
- *  contract from the Phase 1 architecture blueprint. */
+ *  contract from the architecture blueprint. */
 export function VariablesPanel({ variables, values, onChange }: VariablesPanelProps) {
   if (variables.length === 0) {
     return (

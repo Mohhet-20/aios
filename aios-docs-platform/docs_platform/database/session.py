@@ -14,7 +14,7 @@ without resuming past the `yield`, so the post-yield commit is silently
 skipped. Capture the result in an outer variable and return only after
 the loop completes naturally.
 
-Every prior AIOS platform's commit-spanning-lock lesson applies again
+Every other AIOS platform's commit-spanning-lock lesson applies again
 here: any service method that calls `self.repos.session.commit()`
 mid-method (needed when a check-then-act race spans multiple statements
 and must be serialized per-key with an in-process lock held across the

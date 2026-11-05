@@ -2,7 +2,7 @@
 
 The execution backbone of the AI Operating System: a production-grade backend that orchestrates AI agents, prompt execution, memory operations, tool calls, human approvals, background jobs, scheduled tasks, external APIs, long-running processes, and event-driven automation, all as versioned, auditable workflow graphs.
 
-This is Phase 8 of the AIOS build. Prior prompts delivered the AI Core (model execution), Prompt Platform, Agent Platform, and Memory Platform — this platform is the layer that actually runs multi-step processes across all of them, on a schedule or in response to events, with humans able to step in when a process calls for a decision.
+This is Prior prompts delivered the AI Core (model execution), Prompt Platform, Agent Platform, and Memory Platform — this platform is the layer that actually runs multi-step processes across all of them, on a schedule or in response to events, with humans able to step in when a process calls for a decision.
 
 ## What it does
 
@@ -33,7 +33,7 @@ workflow_platform/
   workflow_api/         FastAPI routers (99 endpoints across 9 domains) + application factory
 ```
 
-A few of the directories the original project brief called for by name — `analytics/`, `queue/`, `execution/`, `workflow_registry/`, `schemas/`, `templates/`, `variables/` — exist only as empty placeholders from initial scaffolding. Their intended functionality landed inside better-fitting modules instead: analytics inside `monitoring/` (the brief explicitly scoped a separate Analytics module out of this phase), queueing inside `events/` and `scheduler/`, node type registration inside `node_library/`, and scoped variables inside `state/`. Noting this here rather than leaving it to be discovered.
+A few of the directories the original project brief called for by name — `analytics/`, `queue/`, `execution/`, `workflow_registry/`, `schemas/`, `templates/`, `variables/` — exist only as empty placeholders from initial scaffolding. Their intended functionality landed inside better-fitting modules instead: analytics inside `monitoring/` (the brief explicitly scoped a separate Analytics module out of this layer), queueing inside `events/` and `scheduler/`, node type registration inside `node_library/`, and scoped variables inside `state/`. Noting this here rather than leaving it to be discovered.
 
 ### Design decisions worth knowing about
 
@@ -72,8 +72,8 @@ python3 -m pytest -q
 
 **Is it trustworthy for mission-critical enterprise use?** RBAC is enforced with most-specific-grant-wins (a workflow-level grant beats a workspace-level one for that workflow), every RBAC change and approval decision writes to a consolidated, queryable audit log, secrets are encrypted at rest and excluded from context/log/checkpoint dumps by default, and workspace/organization isolation is asserted rather than assumed. What it does not yet have: real authentication (it trusts an `X-User-Id` header from whatever authenticates callers upstream) and a distributed rate limiter for multi-dispatcher deployments — both called out explicitly above rather than left implicit.
 
-**Can it absorb future AI capabilities without a redesign?** The AI integration surface is a set of Protocol interfaces (`ai_bridges/interfaces.py`) — agent, prompt, memory, knowledge, document intelligence, tool — with in-process reference implementations that already call the real AI Core for LLM calls and embeddings. Swapping a reference bridge for a call into the real Agent Platform, Prompt Platform, or Memory Platform (once those services are reachable over the network) is a one-file change per bridge; the engine and its node handlers only ever depend on the Protocol, never the concrete implementation. Evaluation and MLOps integration were explicitly out of scope for this phase and would slot in the same way, as a new bridge, when their turn comes.
+**Can it absorb future AI capabilities without a redesign?** The AI integration surface is a set of Protocol interfaces (`ai_bridges/interfaces.py`) — agent, prompt, memory, knowledge, document intelligence, tool — with in-process reference implementations that already call the real AI Core for LLM calls and embeddings. Swapping a reference bridge for a call into the real Agent Platform, Prompt Platform, or Memory Platform (once those services are reachable over the network) is a one-file change per bridge; the engine and its node handlers only ever depend on the Protocol, never the concrete implementation. Evaluation and MLOps integration were explicitly out of scope and would slot in the same way, as a new bridge, when their turn comes.
 
-## What's explicitly out of scope (per this phase's scope boundary)
+## What's explicitly out of scope (by design)
 
 No Enterprise Evaluation Platform, no MLOps, no standalone Analytics module (observability covers metrics instead), and no frontend — this is the backend orchestration engine only.

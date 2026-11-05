@@ -3,7 +3,7 @@ against the same SQLite-file-backed database, not the single rollback-
 isolated `repos` fixture every other test file uses. This is the same
 kind of test that caught real lost-update races in sibling AIOS
 platforms (e.g. the Evaluation Platform's dataset `item_count` bug in
-Phase 10): a bug only shows up under real parallel writers, never
+The infrastructure platform): a bug only shows up under real parallel writers, never
 under sequential unit tests."""
 from __future__ import annotations
 

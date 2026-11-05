@@ -39,7 +39,7 @@ from perf_platform.clock import utc_now
 _L1_CACHES: dict[str, LRUTTLCache[str, str]] = {}
 
 # Commit-spanning get-or-create lock, keyed per (tenant, layer, key) —
-# the same pattern established across every prior AIOS platform for a
+# the same pattern established across every other AIOS platform for a
 # check-then-act sequence that spans multiple statements: two
 # concurrent `set()` calls for the same key would otherwise both see
 # "no existing row" and both INSERT, producing a duplicate row (or a

@@ -16,7 +16,7 @@ sibling platform, once wired in as an actual dependency, drops in behind
 these same interfaces without the Execution Engine or any node handler
 changing a line. Binary document formats (PDF/DOCX/PPTX/XLSX) are
 deliberately NOT parsed here — that's the Memory Platform's real
-Document Intelligence pipeline's job (see Phase 7's `document_
+Document Intelligence pipeline's job (see the memory platform's `document_
 intelligence/` module); `TextDocumentIntelligenceBridge` only handles
 plain-text content handed to it directly."""
 from __future__ import annotations
@@ -32,7 +32,7 @@ class LexicalIndex:
     reference bridges — real, deterministic ranking without pulling in a
     vector index dependency this platform doesn't own. A production
     Memory/Knowledge Platform bridge swaps this for genuine embedding
-    similarity (see the Vector Platform built in Phase 7) behind the
+    similarity (see the Vector Platform built in the memory platform) behind the
     exact same Protocol methods."""
 
     @staticmethod
@@ -106,7 +106,7 @@ class AICoreAgentBridge:
     """Real behavior: frames the task as "acting as `agent_id`" and asks
     AI Core's execution engine for a genuine LLM completion. This is a
     legitimate, working single-turn agent — a real Agent Platform (see
-    this project series' Phase 6) additionally brings planning, tool
+    this project series' the agent platform) additionally brings planning, tool
     use, multi-turn memory, and reflection on top, which is why this
     stays scoped as a bridge reference rather than pretending to be that
     whole platform."""

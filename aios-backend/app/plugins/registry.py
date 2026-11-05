@@ -2,13 +2,13 @@
 
 A `PluginManifest` is the contract a third-party (or internal) package
 declares to extend AIOS — new tools, new graders, new agent archetypes —
-without modifying core engine code, per the Phase 1 blueprint's
+without modifying core engine code, per the architecture blueprint's
 extensibility principle. `PluginRegistry` is an in-process catalog today;
 `PluginService` (application layer) is what persists install/enable state
 to the database via `PluginModel`. Loading real third-party code from a
 manifest (dynamic import, sandboxing) is intentionally not implemented here
 — that's a security-sensitive feature deserving its own dedicated design
-pass, not a few lines bolted onto Phase 3.
+pass, not a few lines bolted onto the backend.
 """
 
 from __future__ import annotations

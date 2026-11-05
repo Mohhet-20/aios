@@ -1,7 +1,7 @@
 """Doc visibility enforcement: internal pages require the requester to
 hold at least a 'viewer' role assignment (tenant-wide or scoped to the
 page's space); public pages are open to anyone, including anonymous
-(role=None) requesters. This mirrors every prior AIOS platform's
+(role=None) requesters. This mirrors every other AIOS platform's
 "visibility is a read-time filter, not a write-time restriction"
 posture — a page's visibility field doesn't change who can edit it,
 only who can read it."""

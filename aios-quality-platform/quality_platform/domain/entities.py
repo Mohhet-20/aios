@@ -1,5 +1,5 @@
 """Pure-Python domain entities with guarded state machines — no ORM
-imports, mirroring every prior AIOS platform's domain layer. Five
+imports, mirroring every other AIOS platform's domain layer. Five
 job-style resources get a dedicated entity here (TestRun,
 RegressionScan, PerformanceTestRun, ChaosExperiment,
 CertificationRun); the remaining job-style resources (SecurityScan,

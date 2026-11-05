@@ -2,7 +2,7 @@
 demand via direct aggregate queries rather than maintaining a
 separately-written metrics/events table — the same "count don't cache"
 philosophy `TenantUsageService` uses (Task 142), extended to every
-signal the spec calls for: auth success/failure rates, session
+signal the design calls for: auth success/failure rates, session
 activity, permission (role-assignment) usage, API key usage, org
 growth, workspace activity, and security events. These queries run
 directly against the shared `AsyncSession` (`repos.session`) rather

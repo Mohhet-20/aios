@@ -1,6 +1,6 @@
 """Prompt chaining: a sequence of prompt-execution steps where each step's
 variables can depend on the previous step's response. This is the
-building block agent/workflow logic (Phase 5+) will compose — the AI Core
+building block agent/workflow logic (later) will compose — the AI Core
 only needs to provide "run these steps in order, threading state through,"
 not any agent-specific control flow.
 """

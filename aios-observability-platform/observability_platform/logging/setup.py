@@ -1,7 +1,7 @@
 """structlog configuration for the platform's OWN internal logging —
 not to be confused with the `logs/` module, which ingests and serves
 telemetry logs *from every other AIOS subsystem*. Identical pattern to
-every prior AIOS platform."""
+every other AIOS platform."""
 from __future__ import annotations
 
 import logging

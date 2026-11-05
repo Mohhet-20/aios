@@ -1,11 +1,11 @@
 """Report definition management: register (get-or-create by name),
 list, activate/deactivate, and find due-for-schedule report configs.
 Mirrors the register/list/activate/deactivate shape used by every
-prior AIOS platform's "config catalog" resources (connectors,
+other AIOS platform's "config catalog" resources (connectors,
 policies, KPI/metric definitions in this platform). `register_report`
 is guarded with an in-process `asyncio.Lock` per `(tenant_id,
 report_type, name)`, the same commit-spanning-lock pattern used
-across every prior AIOS platform's own "upsert by identity" methods,
+across every other AIOS platform's own "upsert by identity" methods,
 since two concurrent callers registering the same report name for the
 first time would otherwise both observe no existing row and both
 insert, producing a duplicate report definition."""

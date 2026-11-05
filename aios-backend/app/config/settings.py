@@ -3,7 +3,7 @@ Layered application configuration.
 
 Precedence (highest wins): process environment variables > `.env` file >
 defaults declared below. This mirrors the Configuration Layer described in
-the Phase 1 architecture blueprint: every other module reads config through
+the architecture blueprint: every other module reads config through
 this single `Settings` object (injected via `app.dependencies.get_settings`)
 rather than reading `os.environ` directly, so there is exactly one place
 that knows how configuration is sourced.

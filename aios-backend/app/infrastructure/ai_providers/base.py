@@ -1,14 +1,13 @@
-"""Model provider adapter interface — the AI Core abstraction from Phase
-1's architecture. Every engine that needs a model (InferenceService,
+"""Model provider adapter interface — the AI Core abstraction from 
+the original architecture's architecture. Every engine that needs a model (InferenceService,
 EmbeddingService, EvaluationService's LLM-as-judge grader) depends on this
 interface, never on a provider SDK directly.
 
-Per this phase's scope boundary ("do NOT implement AI model logic
-yet"), no concrete adapter here calls a real provider. `StubModelProvider`
+By design, no concrete adapter here calls a real provider. `StubModelProvider`
 returns deterministic, clearly-labeled placeholder output so the rest of the
 platform (routing, streaming, token accounting, event emission) can be built
 and tested end-to-end today. Implementing `AnthropicProvider`/`OpenAIProvider`
-against this same interface is the entire scope of the next phase — nothing
+against this same interface is a separate piece of work — nothing
 above this file changes when that happens.
 """
 

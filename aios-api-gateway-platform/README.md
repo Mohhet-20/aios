@@ -1,10 +1,10 @@
 # AIOS Enterprise API Gateway, Integration Hub & Service Mesh Platform
 
-Phase 17 of the AIOS build. Package `gateway_platform`, table prefix `gw_`. Delivered as `aios-api-gateway-platform.zip`.
+Package `gateway_platform`, table prefix `gw_`. Delivered as `aios-api-gateway-platform.zip`.
 
 ## What this is
 
-The communication backbone of the AI Operating System: an API gateway with a route registry and OAuth-ready API management (keys, rate limiting, quotas, versioning, JWT, schema validation), a service mesh (discovery, load balancing, circuit breakers, health checks with automatic recovery), traffic management across ten routing strategies, an event platform (topics, subscriptions, publish/deliver/retry/replay with dead-lettering), an integration hub with a 16-type connector catalog, a webhook platform with HMAC-signed delivery, protocol translation across three protocol pairs plus API-version and auth transformation, gateway security (policies, IP/geo filtering, request signing, threat detection, security events), observability/analytics/topology, and a developer experience layer (OpenAPI spec, sample generation, SDK code generation, a testing console, webhook testing). Built with the same clean/layered architecture as every prior AIOS platform: pure-Python domain entities with guarded state machines, a repository/unit-of-work layer, service layer, and a FastAPI REST layer.
+The communication backbone of the AI Operating System: an API gateway with a route registry and OAuth-ready API management (keys, rate limiting, quotas, versioning, JWT, schema validation), a service mesh (discovery, load balancing, circuit breakers, health checks with automatic recovery), traffic management across ten routing strategies, an event platform (topics, subscriptions, publish/deliver/retry/replay with dead-lettering), an integration hub with a 16-type connector catalog, a webhook platform with HMAC-signed delivery, protocol translation across three protocol pairs plus API-version and auth transformation, gateway security (policies, IP/geo filtering, request signing, threat detection, security events), observability/analytics/topology, and a developer experience layer (OpenAPI spec, sample generation, SDK code generation, a testing console, webhook testing). Built with the same clean/layered architecture as every other AIOS platform: pure-Python domain entities with guarded state machines, a repository/unit-of-work layer, service layer, and a FastAPI REST layer.
 
 **Out of scope by design:** no Enterprise Analytics Platform, no Testing Platform, no Documentation Platform.
 
@@ -12,7 +12,7 @@ The communication backbone of the AI Operating System: an API gateway with a rou
 
 Identical pattern to every sibling AIOS platform:
 
-- `domain/` — pure-Python entities (`ApiRoute`, `ApiKey`, `ApiVersion`, `CircuitBreaker`, `EventMessage`, `WebhookDelivery`, `IntegrationConnection`, `SdkGenJob`) with guarded `_transition()` state machines over enums, no ORM imports. Simpler status-only resources (service registrations/instances, traffic rules, event topics/subscriptions, connectors, webhook subscriptions, OAuth clients, security policies, protocol translation configs) are guarded directly in-service instead, the same precedent set by every prior platform's own "simple status field" resources.
+- `domain/` — pure-Python entities (`ApiRoute`, `ApiKey`, `ApiVersion`, `CircuitBreaker`, `EventMessage`, `WebhookDelivery`, `IntegrationConnection`, `SdkGenJob`) with guarded `_transition()` state machines over enums, no ORM imports. Simpler status-only resources (service registrations/instances, traffic rules, event topics/subscriptions, connectors, webhook subscriptions, OAuth clients, security policies, protocol translation configs) are guarded directly in-service instead, the same precedent set by every other platform's own "simple status field" resources.
 - `models/` — SQLAlchemy 2.0 async ORM models, 30 tables across 11 files (`gw_` prefix).
 - `repositories/` — one repository per model plus a `RepositoryRegistry` unit-of-work that lazily shares a single `AsyncSession`.
 - Service modules — one directory per domain, each holding the orchestrating business logic.
@@ -45,7 +45,7 @@ Identical pattern to every sibling AIOS platform:
 
 ## Concurrency
 
-Three commit-spanning `asyncio.Lock` sequences, the same pattern established across every prior AIOS platform for check-then-act races that span multiple statements (separate callers own separate DB connections; SQLite only makes a write visible to others once committed — and the lock must be held until that commit happens, not just until the row is flushed, or a waiting caller can still observe pre-commit state):
+Three commit-spanning `asyncio.Lock` sequences, the same pattern established across every other AIOS platform for check-then-act races that span multiple statements (separate callers own separate DB connections; SQLite only makes a write visible to others once committed — and the lock must be held until that commit happens, not just until the row is flushed, or a waiting caller can still observe pre-commit state):
 
 - `ConnectorService.register_connector` — get-or-create by connector type, locked per `tenant_id:connector_type`.
 - `ServiceRegistryService.register_service` — get-or-create by service name, locked per `tenant_id:name`.
@@ -59,7 +59,7 @@ All three are proven under real concurrent load in `tests/performance/test_concu
 
 ## Disclosed scope boundaries
 
-Consistent with every prior AIOS platform's honest-gap posture:
+Consistent with every other AIOS platform's honest-gap posture:
 
 - The connector catalog (`ConnectorService`) is a config catalog, not a live third-party API client — actually calling out to Slack/GitHub/Salesforce/etc. is out of scope for this control plane, the same disclosed boundary the Developer Platform's MCP integration module drew.
 - `least_connections` load-balancing is a disclosed approximation falling back to round-robin, since this control plane doesn't do real-time per-instance connection accounting.

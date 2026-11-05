@@ -8,7 +8,7 @@ threshold is good). `register_kpi` is a get-or-create by name, and
 `evaluate` is the real health computation every snapshot is derived
 from. `register_kpi` is guarded with an in-process `asyncio.Lock` per
 `(tenant_id, scope, name)`, the same commit-spanning-lock pattern used
-across every prior AIOS platform's own "upsert by identity" methods,
+across every other AIOS platform's own "upsert by identity" methods,
 since two concurrent callers registering the same KPI name for the
 first time would otherwise both observe no existing row and both
 insert, producing a duplicate KPI definition."""

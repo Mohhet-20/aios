@@ -1,7 +1,7 @@
 """Enum vocabulary for the docs platform. `JobStatus` is shared across
 every job/run-style resource (generation jobs) — reused rather than
 re-declared per module, since the transition semantics are identical,
-the same precedent set in the Quality Platform (Phase 19)."""
+the same precedent set in the Quality Platform (the quality platform)."""
 from __future__ import annotations
 
 import enum

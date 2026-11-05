@@ -1,4 +1,4 @@
-"""Application Factory pattern (same as every prior AIOS platform):
+"""Application Factory pattern (same as every other AIOS platform):
 `create_app()` builds a fully-configured FastAPI instance so tests can
 build fresh app instances with dependency overrides instead of importing
 one module-level global."""

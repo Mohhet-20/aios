@@ -1,5 +1,5 @@
 """Pure-Python domain aggregates — no ORM/SQLAlchemy imports here, the
-same separation every prior AIOS platform uses. Each entity owns a
+same separation every other AIOS platform uses. Each entity owns a
 guarded `_transition()` over its own status enum (or, where the
 lifecycle is really just a couple of independent boolean flags rather
 than a status enum — comments, notifications — guarded flag-mutating

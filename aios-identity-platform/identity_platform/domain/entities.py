@@ -1,5 +1,5 @@
 """Pure-Python domain aggregates — no ORM/SQLAlchemy imports here, the
-same separation every prior AIOS platform uses. Each entity owns a
+same separation every other AIOS platform uses. Each entity owns a
 guarded `_transition()` over its own status enum; unlike the
 Evaluation Platform's `EvaluationRun`/`BenchmarkRun` (which shared one
 `_RunMixin` because their state machines were identical in shape and

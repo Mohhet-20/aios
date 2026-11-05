@@ -1,4 +1,4 @@
-"""structlog configuration — identical pattern to every prior AIOS platform."""
+"""structlog configuration — identical pattern to every other AIOS platform."""
 from __future__ import annotations
 
 import logging

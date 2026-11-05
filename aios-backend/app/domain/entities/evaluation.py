@@ -1,5 +1,5 @@
 """Evaluation aggregate — tracks a single graded run of a prompt/agent/model
-against a dataset, matching the Evaluation Engine design from Phase 1.
+against a dataset, matching the Evaluation Engine design from the original architecture.
 """
 
 from __future__ import annotations

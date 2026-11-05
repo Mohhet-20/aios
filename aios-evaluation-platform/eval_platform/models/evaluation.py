@@ -3,7 +3,7 @@ evaluation (what's being measured, its category, ownership). The
 versioned *contract* — which dataset it runs against, which metrics it
 computes, its scoring config and pass threshold — lives in
 `EvaluationVersionModel`, the same Tool/ToolVersion-style split every
-prior AIOS platform uses so an in-flight `EvaluationRun` keeps scoring
+other AIOS platform uses so an in-flight `EvaluationRun` keeps scoring
 against the exact configuration it started with even if the evaluation
 gets edited and republished underneath it."""
 from __future__ import annotations

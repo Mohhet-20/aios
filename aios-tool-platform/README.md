@@ -1,23 +1,23 @@
 # AIOS Enterprise Tool Execution & Integration Platform
 
-Phase 9 of the AIOS build. Package `tool_platform`. This README was reconstructed during the Phase 23 architecture audit — the platform shipped without one; every fact below is verified against the actual source (settings, module docstrings, exceptions, route count, test count), not inferred.
+Package `tool_platform`. This README was reconstructed during the documentation audit architecture audit — the platform shipped without one; every fact below is verified against the actual source (settings, module docstrings, exceptions, route count, test count), not inferred.
 
 ## What this is
 
-The tool layer every AIOS agent/workflow calls into: a tool registry across 37 built-in categories, a plugin marketplace (publish/install/version, signature-required by default), a Credential Vault (Fernet-encrypted secret material, never plaintext at rest), a real resource-limited execution sandbox for Python/shell connectors (subprocess-based, not simulated), a reference MCP-server connector plus other built-in connectors, tool discovery (capability/category/tag/lexical search), an AI-facing planning layer that turns agent intent into a dispatchable call, a task scheduler, and governance/observability. Built with the same clean/layered architecture as every prior AIOS platform.
+The tool layer every AIOS agent/workflow calls into: a tool registry across 37 built-in categories, a plugin marketplace (publish/install/version, signature-required by default), a Credential Vault (Fernet-encrypted secret material, never plaintext at rest), a real resource-limited execution sandbox for Python/shell connectors (subprocess-based, not simulated), a reference MCP-server connector plus other built-in connectors, tool discovery (capability/category/tag/lexical search), an AI-facing planning layer that turns agent intent into a dispatchable call, a task scheduler, and governance/observability. Built with the same clean/layered architecture as every other AIOS platform.
 
 ## Architecture
 
 - `domain/` — pure-Python entities with guarded `_transition()` state machines (`Tool`, `ToolExecution`, `Schedule`, and others).
 - `models/` — SQLAlchemy 2.0 async ORM models, 16 tables.
-- `repositories/` — one repository per model plus a `RepositoryRegistry` unit-of-work (includes the `get_many()` batch-fetch method added platform-wide during the Phase 22/23 audits — this platform's own N+1 fix from that audit, `DiscoveryService.recently_used`/`.list_favorites`, uses it directly).
+- `repositories/` — one repository per model plus a `RepositoryRegistry` unit-of-work (includes the `get_many()` batch-fetch method added platform-wide during the platform-wide audits — this platform's own N+1 fix from that audit, `DiscoveryService.recently_used`/`.list_favorites`, uses it directly).
 - Service modules — one directory per domain: `tool_core/`, `tool_registry/`, `plugin_system/`, `credentials/`, `sandbox/`, `tool_execution/`, `connectors/`, `discovery/`, `ai_planning/`, `platform_bridges/`, `marketplace/`, `governance/`, `monitoring/`, `validation/`, `scheduler/`.
 - `tool_api/` — FastAPI Application Factory, versioned routers (92 routes) + an unversioned `/health` probe, a shared exception-handler layer mapping the 27-class domain exception hierarchy to HTTP status codes.
 - `dependencies/` — FastAPI dependency wiring (DB session → `RepositoryRegistry` → services).
 
 ## Module breakdown
 
-**Tool Core & Registry** (`tool_core/`, `tool_registry/`) — `ToolService` is identity/ownership/lifecycle CRUD for the top-level `ToolModel`; editing the actual contract (schema/config/capabilities/auth requirement) lives in `version_service.py`, the same identity-vs-version-content split used across every prior AIOS platform. `CategoryRegistry` is a data-driven catalog of all 37 built-in tool categories — policy/metadata only (default capabilities, sandbox-by-default, typical auth kind).
+**Tool Core & Registry** (`tool_core/`, `tool_registry/`) — `ToolService` is identity/ownership/lifecycle CRUD for the top-level `ToolModel`; editing the actual contract (schema/config/capabilities/auth requirement) lives in `version_service.py`, the same identity-vs-version-content split used across every other AIOS platform. `CategoryRegistry` is a data-driven catalog of all 37 built-in tool categories — policy/metadata only (default capabilities, sandbox-by-default, typical auth kind).
 
 **Plugin System & Marketplace** (`plugin_system/`, `marketplace/`) — `PluginRegistryService` is the "list your extension" side (publish/list/version a listing plus its declared dependency edges); `installation_service.py` is the "a workspace actually installs it" side; `marketplace/` is the read/browse/discover side, kept separate so search/browse concerns don't couple to the publish/install write path.
 
@@ -47,7 +47,7 @@ Separately, this platform's get-or-create-shaped writes (favoriting, plugin inst
 
 ## Self-review
 
-This README was written after the fact as part of the Phase 23 documentation-consistency audit — the platform itself (260 tests, 92 REST routes, a real subprocess sandbox, Fernet-encrypted credential storage) was already solid; what was missing was purely the documentation artifact every sibling platform has.
+This README was written after the fact as part of a documentation-consistency audit — the platform itself (260 tests, 92 REST routes, a real subprocess sandbox, Fernet-encrypted credential storage) was already solid; what was missing was purely the documentation artifact every sibling platform has.
 
 ## Running it
 

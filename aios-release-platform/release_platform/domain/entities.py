@@ -5,7 +5,7 @@ resources actually behave in practice:
 
 `Deployment` uses the generic `JobStatus` shape (queued -> in_progress
 -> succeeded/failed, plus a post-hoc rolled_back marker) shared by
-every prior AIOS platform's job-like resources.
+every other AIOS platform's job-like resources.
 
 `Release` has its own bespoke editorial-approval lifecycle (draft ->
 candidate -> approved -> released -> deprecated/yanked) since release
@@ -19,7 +19,7 @@ deployment job cannot.
 Simpler status-only resources (feature flags, licenses, environments,
 health check runs, rollbacks, SBOM/signature/approval records) are
 guarded directly in-service instead, the same "simple status field"
-precedent every prior platform established."""
+precedent every other platform established."""
 from __future__ import annotations
 
 from dataclasses import dataclass

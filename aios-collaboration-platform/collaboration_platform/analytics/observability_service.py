@@ -2,7 +2,7 @@
 editing-session stats, review/approval metrics, notification delivery
 health, user engagement, and workspace growth — every metric computed
 on demand from the real tables rather than a maintained counter, the
-same anti-drift philosophy every prior AIOS platform's observability
+same anti-drift philosophy every other AIOS platform's observability
 layer follows (see the Identity Platform's tenancy quota usage, or the
 Tool Platform's resource-usage-only-when-measured rule)."""
 from __future__ import annotations

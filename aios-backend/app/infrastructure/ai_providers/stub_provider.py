@@ -23,8 +23,8 @@ from app.infrastructure.ai_providers.base import (
 )
 
 _STUB_NOTICE = (
-    "[stubbed response — no AI model logic is wired up yet; this is Phase 3's "
-    "backend platform, not Phase 4's AI Core] "
+    "[stubbed response — no AI model logic is wired up yet; this is the core backend's "
+    "backend platform, not AI Core] "
 )
 
 

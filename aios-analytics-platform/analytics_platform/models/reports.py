@@ -1,7 +1,7 @@
 """Reporting Platform schema: a report definition (what kind of
 report, in what format, on what schedule) and a report run history
 (one row per generation attempt, guarded queued -> generating ->
-completed/failed) — the same split every prior AIOS platform uses
+completed/failed) — the same split every other AIOS platform uses
 between a reusable "job config" and its individual executions."""
 from __future__ import annotations
 

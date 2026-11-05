@@ -1,7 +1,7 @@
 """structlog configuration for the platform's OWN internal logging —
 not to be confused with `events/`, which records security events *from
 every AIOS subsystem this platform protects*. Identical pattern to
-every prior AIOS platform."""
+every other AIOS platform."""
 from __future__ import annotations
 
 import logging

@@ -31,7 +31,7 @@ async def _create_schema():
 async def db_session():
     """Rollback-isolated by default. If a future service method needs a
     commit-spanning in-process lock (the pattern established across every
-    prior AIOS platform for check-then-act races that span multiple
+    other AIOS platform for check-then-act races that span multiple
     statements), calling it through this fixture will durably commit
     everything written earlier in that same test, bypassing this
     teardown's rollback — use a unique per-test id in that case, never a

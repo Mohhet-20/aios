@@ -4,7 +4,7 @@ and failure recovery rate — every metric here is computed directly from
 already-persisted observability rows (executions, tasks, messages,
 reasoning traces). No LLM-judge calls, no separate evaluation-run
 pipeline, no golden test cases — that's the Enterprise Evaluation
-platform the Phase 6 scope boundary explicitly excludes. What's here is
+platform the agent platform scope boundary explicitly excludes. What's here is
 real arithmetic over real data, not a stub.
 """
 from __future__ import annotations

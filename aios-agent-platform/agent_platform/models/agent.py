@@ -1,6 +1,6 @@
 """AgentModel: identity, role, capabilities, skills, goals, instructions,
 memory access config, context window, configuration, version, lifecycle,
-health status, and resource limits — every field the spec's AGENT
+health status, and resource limits — every field the design's AGENT
 ARCHITECTURE section calls for. `agent_type_id` is what makes an agent
 "a Planner" or "a Critic"; the agent row itself holds the
 instance-specific overrides (its own instructions, goals, tool grants).

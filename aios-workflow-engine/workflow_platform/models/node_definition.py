@@ -1,5 +1,5 @@
 """NodeDefinitionModel: the data-driven node-type registry — the same
-"extensibility via data, not code" lesson every prior AIOS platform's
+"extensibility via data, not code" lesson every other AIOS platform's
 type registry used (`AgentTypeModel`, `MemoryTypePolicyModel`). Adding a
 31st node type, or tuning an existing one's default timeout/retry
 policy, is a row insert/update, not a new Python class — though the

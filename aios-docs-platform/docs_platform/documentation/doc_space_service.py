@@ -1,6 +1,6 @@
 """Doc space management. `register_space` is a get-or-create upsert
 keyed on (tenant_id, key) behind a commit-spanning `asyncio.Lock` —
-the same pattern established across every prior AIOS platform, with
+the same pattern established across every other AIOS platform, with
 the mid-lock commit needed so a waiting caller's read can't observe a
 still-uncommitted insert from a separate DB connection."""
 from __future__ import annotations

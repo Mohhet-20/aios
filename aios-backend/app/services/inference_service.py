@@ -2,7 +2,7 @@
 Every model call in the platform funnels through here, which is what makes
 provider-swapping (the whole point of the AI Core abstraction) possible:
 this service depends on `ModelProviderAdapter`, never on a specific
-provider's SDK. Today that adapter is `StubModelProvider` per this phase's
+provider's SDK. Today that adapter is `StubModelProvider` per the current
 scope boundary — see `app.infrastructure.ai_providers` for the swap plan.
 """
 

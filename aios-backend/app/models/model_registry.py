@@ -5,11 +5,11 @@ from app.database.base import AuditMixin, Base, IdMixin
 
 
 class ModelRegistryEntry(IdMixin, AuditMixin, Base):
-    """Represents one entry in the AI Core's model registry (Phase 1,
+    """Represents one entry in the AI Core's model registry (the original architecture,
     Section 3.1). AIOS never calls a provider SDK directly from this table —
     it only records *which* models/providers are configured and their
     capabilities/pricing; the actual adapter implementation is
-    `app.infrastructure.ai_providers`, explicitly stubbed per this phase's
+    `app.infrastructure.ai_providers`, explicitly stubbed per the
     scope boundary."""
 
     __tablename__ = "model_registry"

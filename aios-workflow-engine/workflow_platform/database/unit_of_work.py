@@ -1,6 +1,6 @@
 """UnitOfWork: async context manager pairing one AsyncSession with one
 RepositoryRegistry, committing on clean exit and rolling back on any
-exception. Same pattern as every prior AIOS platform's UoW."""
+exception. Same pattern as every other AIOS platform's UoW."""
 from __future__ import annotations
 
 from types import TracebackType

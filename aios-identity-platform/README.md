@@ -2,7 +2,7 @@
 
 The identity layer every other AIOS subsystem sits on top of: a production-grade backend for authentication, organizations, teams, workspaces, projects, groups, RBAC, multi-tenancy, service accounts/API keys, security policy, and audit — the thing an AI Core, Prompt Platform, Agent Platform, Memory Platform, Workflow Engine, or Tool Platform call to answer "who is this, what org/tenant are they in, and are they allowed to do this."
 
-This is Phase 11 of the AIOS build. Package `identity_platform`, table prefix `ip_`.
+This is Package `identity_platform`, table prefix `ip_`.
 
 ## What it does
 
@@ -94,6 +94,6 @@ python3 -m pytest -q
 
 **Can new organizations onboard at enterprise scale without schema changes?** Tenant tiers are data (`TenantTier` + quota presets), not code paths — a new tier or a new quota dimension is a preset entry, not a new branch in the services that enforce it. The five-level containment hierarchy (org → workspace → team → project, plus groups) and its membership tables are uniform across levels, so a new containment concept would extend the existing pattern rather than requiring a new one.
 
-## What's explicitly out of scope (per this phase's scope boundary)
+## What's explicitly out of scope (by design)
 
 No Collaboration features, no Enterprise Analytics platform (Observability here covers session/security/audit aggregates only, not product analytics), and no MLOps — this is Authentication, Organizations & the Multi-Tenant Platform only, exactly as scoped.

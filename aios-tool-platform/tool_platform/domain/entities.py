@@ -1,5 +1,5 @@
 """Pure-Python domain aggregates — no ORM/SQLAlchemy imports here, same
-separation every prior AIOS platform used. `Tool` owns the
+separation every other AIOS platform used. `Tool` owns the
 publish/deprecate/disable lifecycle; `ToolExecution` owns the real
 run-time retry/timeout/cancel/rollback state machine (the core of the
 execution engine); `PluginInstallation` owns install/enable/disable/

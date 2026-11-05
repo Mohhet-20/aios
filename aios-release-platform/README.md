@@ -1,18 +1,18 @@
 # AIOS Enterprise Release Engineering, Distribution & Deployment Ecosystem
 
-Phase 21 of the AIOS build. Package `release_platform`, table prefix `rel_`. Delivered as `aios-release-platform.zip`.
+Package `release_platform`, table prefix `rel_`. Delivered as `aios-release-platform.zip`.
 
 ## What this is
 
-A production-grade release platform for managing thousands of deployments across cloud, hybrid, edge, and on-premises environments with zero downtime and full operational safety: release & version management (SemVer, 8 release channels, draft→candidate→approved→released lifecycle), an 11-type artifact catalog with distribution channels, deployment orchestration across 9 target environments, 10 rollout strategies, a feature-flag platform with deterministic percentage-bucketed targeting, update infrastructure, license management, environment management across 8 environment types, deployment validation (10 health-check targets), an 8-type rollback engine, release analytics, and a security/supply-chain layer (artifact signing, SBOM, checksum verification, release approvals). Built with the same clean/layered architecture as every prior AIOS platform: pure-Python domain entities with guarded state machines, a repository/unit-of-work layer, a service layer, and a FastAPI REST layer.
+A production-grade release platform for managing thousands of deployments across cloud, hybrid, edge, and on-premises environments with zero downtime and full operational safety: release & version management (SemVer, 8 release channels, draft→candidate→approved→released lifecycle), an 11-type artifact catalog with distribution channels, deployment orchestration across 9 target environments, 10 rollout strategies, a feature-flag platform with deterministic percentage-bucketed targeting, update infrastructure, license management, environment management across 8 environment types, deployment validation (10 health-check targets), an 8-type rollback engine, release analytics, and a security/supply-chain layer (artifact signing, SBOM, checksum verification, release approvals). Built with the same clean/layered architecture as every other AIOS platform: pure-Python domain entities with guarded state machines, a repository/unit-of-work layer, a service layer, and a FastAPI REST layer.
 
-**Out of scope by design:** no repository cleanup, no final architecture review, no packaging of the overall AIOS meta-project — this platform's own delivery follows the same standard packaging step every prior platform in the series has used.
+**Out of scope by design:** no repository cleanup, no final architecture review, no packaging of the overall AIOS meta-project — this platform's own delivery follows the same standard packaging step every other platform in the series has used.
 
 ## Architecture
 
 Identical pattern to every sibling AIOS platform:
 
-- `domain/` — pure-Python entities (`Deployment`, `Release`, `Rollout`) with guarded `_transition()` state machines over enums, no ORM imports. `Deployment` shares the generic queued → in_progress → succeeded/failed job shape every prior platform's job lifecycle uses (plus succeeded → rolled_back). `Release` and `Rollout` each have their own bespoke lifecycle: releases move draft → candidate → approved → released → deprecated/yanked with backward reject/revoke-approval transitions; rollouts move planned → in_progress → paused/completed/aborted with a resumable pause and a `advance(step_pct)` clamped to `[current, 100]`. Simpler status-only resources (updates, licenses, rollbacks, feature-flag enable/disable, environment activate/deactivate) are guarded directly in-service via inline transition dicts, the same "simple status field" precedent every prior platform established.
+- `domain/` — pure-Python entities (`Deployment`, `Release`, `Rollout`) with guarded `_transition()` state machines over enums, no ORM imports. `Deployment` shares the generic queued → in_progress → succeeded/failed job shape every other platform's job lifecycle uses (plus succeeded → rolled_back). `Release` and `Rollout` each have their own bespoke lifecycle: releases move draft → candidate → approved → released → deprecated/yanked with backward reject/revoke-approval transitions; rollouts move planned → in_progress → paused/completed/aborted with a resumable pause and a `advance(step_pct)` clamped to `[current, 100]`. Simpler status-only resources (updates, licenses, rollbacks, feature-flag enable/disable, environment activate/deactivate) are guarded directly in-service via inline transition dicts, the same "simple status field" precedent every other platform established.
 - `models/` — SQLAlchemy 2.0 async ORM models, 20 tables across 12 files (`rel_` prefix).
 - `repositories/` — one repository per model plus a `RepositoryRegistry` unit-of-work that lazily shares a single `AsyncSession`.
 - Service modules — one directory per domain, each holding the orchestrating business logic.
@@ -47,7 +47,7 @@ Identical pattern to every sibling AIOS platform:
 
 ## Concurrency
 
-One commit-spanning `asyncio.Lock` sequence, the same pattern established across every prior AIOS platform for check-then-act races that span multiple statements (separate callers own separate DB connections; SQLite only makes a write visible to others once committed — and the lock must be held until that commit happens, not just until the row is flushed, or a waiting caller can still observe pre-commit state):
+One commit-spanning `asyncio.Lock` sequence, the same pattern established across every other AIOS platform for check-then-act races that span multiple statements (separate callers own separate DB connections; SQLite only makes a write visible to others once committed — and the lock must be held until that commit happens, not just until the row is flushed, or a waiting caller can still observe pre-commit state):
 
 - `EnvironmentService.register_environment` — get-or-create by (`tenant_id`, `name`), locked per `tenant_id:name`.
 
@@ -61,7 +61,7 @@ Proven under real concurrent load in `tests/performance/test_concurrency.py`, wh
 
 ## Disclosed scope boundaries
 
-Consistent with every prior AIOS platform's honest-gap posture:
+Consistent with every other AIOS platform's honest-gap posture:
 
 - `HealthCheckService.run_all_checks` accepts an injectable `checker` callable; the REST surface doesn't supply one, so every target is recorded as `"degraded"` with an explanatory note rather than falsely claiming `"passed"`. Wiring a real checker (one that actually pings the application, API, database, and the other 7 declared targets) is a natural next step, not a currently-shipped capability — directly mirroring docs_platform's `GenerationJobService.run_job` honest-gap pattern.
 - `DeploymentService` does not cross-validate `release_id`/`environment_id` against real rows, and `RolloutService` does not cross-validate `deployment_id`. This is an intentional "loose FK, no forced cross-module dependency" choice, the same decoupling precedent as docs_platform's search/assistant modules — a deployment record referencing a since-deleted release is a data-quality signal for an operator dashboard to surface, not a referential-integrity violation this platform enforces at write time.

@@ -1,6 +1,6 @@
 // Shared domain types consumed across features/, components/, and services/.
 // These mirror (a frontend-friendly projection of) the backend contracts
-// defined in the AIOS architecture blueprint (Phase 1) — Prompt/Agent/
+// defined in the AIOS architecture blueprint (the original architecture) — Prompt/Agent/
 // Workflow/Memory/Tool/Evaluation engines each own one section here.
 
 export type ID = string;

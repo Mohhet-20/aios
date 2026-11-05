@@ -1,5 +1,5 @@
 """Drives the platform purely through HTTP, end to end, across every
-domain — the same style as every prior AIOS platform's API test
+domain — the same style as every other AIOS platform's API test
 suite. Uses a dedicated tenant id (`api-e2e-tenant`, set in
 conftest.py's `client` fixture) and actor id (`u1`, from the
 X-User-Id header) rather than the generic ids used throughout the

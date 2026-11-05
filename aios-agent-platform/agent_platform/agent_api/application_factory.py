@@ -1,4 +1,4 @@
-"""Application Factory pattern (same as Phases 3 and 5): `create_app()`
+"""Application Factory pattern (same as the other services): `create_app()`
 builds a fully-configured FastAPI instance so tests can build fresh app
 instances with dependency overrides instead of importing one module-level
 global."""

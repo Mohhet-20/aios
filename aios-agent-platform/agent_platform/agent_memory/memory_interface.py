@@ -1,5 +1,5 @@
 """Memory Integration: a clean interface every memory backend (short-term,
-long-term, semantic) satisfies. Per the Phase 6 scope boundary ("do NOT
+long-term, semantic) satisfies. Per the agent platform scope boundary ("do NOT
 build the Memory Platform"), this project ships exactly one minimal,
 honest, in-process implementation — not a persistence layer, not
 semantic/embedding-backed recall — so callers (agents, AgentExecutor,

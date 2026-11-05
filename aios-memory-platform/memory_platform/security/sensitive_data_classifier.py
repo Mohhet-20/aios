@@ -1,5 +1,5 @@
 """Regex-based sensitive-data detection — real, useful, false-positive-
-tolerant heuristics (the same category of tool Phase 5's prompt-security
+tolerant heuristics (the same category of tool the prompt platform's prompt-security
 layer used for secret detection), not a trained PII classifier. Flags
 content for a `SensitivityLevel` and a list of concrete findings so a
 caller (or a human reviewer) can see exactly what triggered it.

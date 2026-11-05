@@ -2,7 +2,7 @@
 service, plus AI Core and a minimal caller-identity dependency.
 
 Auth is intentionally minimal here: this platform expects to sit behind
-an already-authenticated gateway (e.g. the AIOS backend from Phase 3,
+an already-authenticated gateway (e.g. the AIOS core backend,
 which owns full JWT/session auth) that forwards the caller's identity via
 the `X-User-Id` header. Swapping this dependency for real token
 validation is a drop-in change — every router already depends on

@@ -1,5 +1,5 @@
 """Unit-of-work: one shared `AsyncSession` backing every repository,
-lazily memoized. Identical pattern to every prior AIOS platform."""
+lazily memoized. Identical pattern to every other AIOS platform."""
 from __future__ import annotations
 
 from sqlalchemy.ext.asyncio import AsyncSession

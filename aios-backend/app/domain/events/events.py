@@ -1,6 +1,6 @@
 """Concrete domain/application/workflow/AI/notification/audit/plugin events.
 
-Grouped by the categories the Phase 1 blueprint calls out (Domain, Workflow,
+Grouped by the categories the architecture blueprint calls out (Domain, Workflow,
 AI, Notification, Audit, Plugin events) even though they share one base
 class — the categorization is about *intent* (who subscribes to what), not
 a different mechanism.

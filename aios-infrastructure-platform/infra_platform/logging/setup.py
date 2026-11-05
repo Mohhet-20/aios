@@ -1,5 +1,5 @@
 """structlog configuration for the platform's own internal logging.
-Identical pattern to every prior AIOS platform."""
+Identical pattern to every other AIOS platform."""
 from __future__ import annotations
 
 import logging

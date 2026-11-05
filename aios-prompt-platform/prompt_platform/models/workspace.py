@@ -1,6 +1,6 @@
 """Prompt Workspaces and Projects — lightweight organizational containers
 scoped to this platform. Identity (users/organizations) is owned by the
-AIOS backend (Phase 3); this platform stores opaque owner/organization
+AIOS backend (the core backend); this platform stores opaque owner/organization
 IDs rather than re-implementing user management, so `organization_id`/
 `owner_id` here are just indexed strings, not foreign keys into a local
 users table.

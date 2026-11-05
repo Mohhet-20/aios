@@ -1,4 +1,4 @@
-"""Seed data for the 17 built-in specialized agent types the spec calls
+"""Seed data for the 17 built-in specialized agent types the design calls
 for. This is deliberately DATA, not Python classes — the whole point of
 `AgentTypeModel` being a table is that a new specialist (built-in or
 customer-defined) is a row insert, never a code change. Re-running

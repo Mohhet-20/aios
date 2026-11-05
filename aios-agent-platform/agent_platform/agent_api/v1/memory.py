@@ -1,5 +1,5 @@
 """Memory Integration: the MemoryService choke point, gated by each
-agent's own `memory_access` config. Per the Phase 6 scope boundary this
+agent's own `memory_access` config. Per the agent platform scope boundary this
 is backed by the one minimal in-process implementation the platform
 ships — real persistence/semantic recall is future scope."""
 from __future__ import annotations

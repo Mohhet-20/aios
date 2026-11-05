@@ -1,6 +1,6 @@
 """RepositoryRegistry: per-request unit-of-work that lazily
 instantiates and memoizes one repository per model, all sharing the
-same AsyncSession — identical pattern to every prior AIOS platform."""
+same AsyncSession — identical pattern to every other AIOS platform."""
 from __future__ import annotations
 
 from sqlalchemy.ext.asyncio import AsyncSession

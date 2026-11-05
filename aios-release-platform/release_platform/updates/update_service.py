@@ -2,7 +2,7 @@
 (automatic, manual, scheduled, delta, patch, offline, rollback),
 guarded by an inline `_UPDATE_TRANSITIONS` dict rather than a
 dedicated domain entity — a "simple status field" resource in the
-same sense as every prior AIOS platform's status-only resources,
+same sense as every other AIOS platform's status-only resources,
 since an update job's lifecycle carries no logic beyond the sequence
 of states themselves. Version-compatibility checking is delegated to
 `release_engineering.VersionService`'s compatibility matrix rather

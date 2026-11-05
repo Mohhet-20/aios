@@ -34,7 +34,7 @@ class PackageRegistryService:
     insert keyed on `tenant_id:package_id:version`) are check-then-act
     sequences spanning a read and a write — each guarded with its own
     in-process `asyncio.Lock` per key, the same commit-spanning-lock
-    pattern used across every prior AIOS platform's own "upsert/insert
+    pattern used across every other AIOS platform's own "upsert/insert
     by identity" methods, so two concurrent callers can never both
     observe "nothing exists yet" and both insert a duplicate."""
 

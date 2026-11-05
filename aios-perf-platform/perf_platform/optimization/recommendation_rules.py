@@ -7,7 +7,7 @@ from the repositories, calls these, and persists whatever comes back.
 
 Splitting it this way means the actual "is this worth recommending"
 judgment call is unit-testable with plain numbers, no DB and no
-async, the same testing shape as every prior AIOS platform's
+async, the same testing shape as every other AIOS platform's
 `*_rules.py` modules."""
 from __future__ import annotations
 
