@@ -15,7 +15,7 @@ async def liveness():
 
 
 @router.get("/ready")
-async def readiness(response: Response, session: AsyncSession = Depends(get_db_session)):
+async def readiness(response: Response, session: AsyncSession = Depends(get_db_session, scope="function")):
     report = await build_readiness_report(session)
     response.status_code = 200 if report.healthy else 503
     return {

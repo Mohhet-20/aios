@@ -23,6 +23,8 @@ jobs:
           python-version: "3.11"
       - name: Shared modules are identical in every service
         run: python scripts/check_shared_modules.py
+      - name: Writes commit before the response is sent
+        run: python scripts/check_commit_before_response.py
       - name: Compose file is valid
         env:
           AIOS_INTERNAL_TOKEN: ci-placeholder-not-a-secret-0123456789abcdef

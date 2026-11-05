@@ -91,43 +91,43 @@ def get_plugin_registry() -> PluginRegistry:
     return plugin_registry
 
 
-def get_auth_service(session: AsyncSession = Depends(get_db_session)) -> AuthService:
+def get_auth_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> AuthService:
     return AuthService(UserRepository(session), RefreshTokenRepository(session), event_bus)
 
 
-def get_user_service(session: AsyncSession = Depends(get_db_session)) -> UserService:
+def get_user_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> UserService:
     return UserService(UserRepository(session))
 
 
-def get_organization_service(session: AsyncSession = Depends(get_db_session)) -> OrganizationService:
+def get_organization_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> OrganizationService:
     return OrganizationService(OrganizationRepository(session), OrganizationMembershipRepository(session))
 
 
-def get_team_service(session: AsyncSession = Depends(get_db_session)) -> TeamService:
+def get_team_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> TeamService:
     return TeamService(TeamRepository(session), TeamMembershipRepository(session))
 
 
-def get_workspace_service(session: AsyncSession = Depends(get_db_session)) -> WorkspaceService:
+def get_workspace_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> WorkspaceService:
     return WorkspaceService(WorkspaceRepository(session))
 
 
-def get_project_service(session: AsyncSession = Depends(get_db_session)) -> ProjectService:
+def get_project_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> ProjectService:
     return ProjectService(ProjectRepository(session))
 
 
-def get_agent_service(session: AsyncSession = Depends(get_db_session)) -> AgentService:
+def get_agent_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> AgentService:
     return AgentService(AgentRepository(session))
 
 
-def get_prompt_service(session: AsyncSession = Depends(get_db_session)) -> PromptService:
+def get_prompt_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> PromptService:
     return PromptService(PromptRepository(session), PromptVersionRepository(session), event_bus)
 
 
-def get_model_service(session: AsyncSession = Depends(get_db_session)) -> ModelService:
+def get_model_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> ModelService:
     return ModelService(ModelRepository(session))
 
 
-def get_workflow_service(session: AsyncSession = Depends(get_db_session)) -> WorkflowService:
+def get_workflow_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> WorkflowService:
     return WorkflowService(
         WorkflowRepository(session), WorkflowExecutionRepository(session), event_bus, worker_pool
     )
@@ -145,37 +145,37 @@ def get_vector_service() -> VectorService:
     return VectorService(in_memory_vector_store)
 
 
-def get_memory_service(session: AsyncSession = Depends(get_db_session)) -> MemoryService:
+def get_memory_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> MemoryService:
     return MemoryService(
         MemoryRepository(session), EmbeddingService(stub_provider), VectorService(in_memory_vector_store)
     )
 
 
-def get_evaluation_service(session: AsyncSession = Depends(get_db_session)) -> EvaluationService:
+def get_evaluation_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> EvaluationService:
     return EvaluationService(EvaluationRepository(session), event_bus, worker_pool)
 
 
-def get_knowledge_service(session: AsyncSession = Depends(get_db_session)) -> KnowledgeService:
+def get_knowledge_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> KnowledgeService:
     return KnowledgeService(KnowledgeCollectionRepository(session))
 
 
-def get_document_service(session: AsyncSession = Depends(get_db_session)) -> DocumentService:
+def get_document_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> DocumentService:
     return DocumentService(DocumentRepository(session), KnowledgeCollectionRepository(session), worker_pool)
 
 
-def get_dataset_service(session: AsyncSession = Depends(get_db_session)) -> DatasetService:
+def get_dataset_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> DatasetService:
     return DatasetService(DatasetRepository(session))
 
 
-def get_experiment_service(session: AsyncSession = Depends(get_db_session)) -> ExperimentService:
+def get_experiment_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> ExperimentService:
     return ExperimentService(ExperimentRepository(session))
 
 
-def get_conversation_service(session: AsyncSession = Depends(get_db_session)) -> ConversationService:
+def get_conversation_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> ConversationService:
     return ConversationService(ConversationRepository(session), ConversationMessageRepository(session))
 
 
-def get_search_service(session: AsyncSession = Depends(get_db_session)) -> SearchService:
+def get_search_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> SearchService:
     return SearchService(PromptRepository(session), AgentRepository(session), DocumentRepository(session))
 
 
@@ -183,21 +183,21 @@ def get_monitoring_service() -> MonitoringService:
     return MonitoringService(worker_pool)
 
 
-def get_notification_service(session: AsyncSession = Depends(get_db_session)) -> NotificationService:
+def get_notification_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> NotificationService:
     return NotificationService(NotificationRepository(session), event_bus)
 
 
-def get_configuration_service(session: AsyncSession = Depends(get_db_session)) -> ConfigurationService:
+def get_configuration_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> ConfigurationService:
     return ConfigurationService(ConfigurationRepository(session))
 
 
-def get_plugin_service(session: AsyncSession = Depends(get_db_session)) -> PluginService:
+def get_plugin_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> PluginService:
     return PluginService(PluginRepository(session), ToolRepository(session), plugin_registry)
 
 
-def get_audit_service(session: AsyncSession = Depends(get_db_session)) -> AuditService:
+def get_audit_service(session: AsyncSession = Depends(get_db_session, scope="function")) -> AuditService:
     return AuditService(AuditRepository(session))
 
 
-def get_api_key_repository(session: AsyncSession = Depends(get_db_session)) -> ApiKeyRepository:
+def get_api_key_repository(session: AsyncSession = Depends(get_db_session, scope="function")) -> ApiKeyRepository:
     return ApiKeyRepository(session)

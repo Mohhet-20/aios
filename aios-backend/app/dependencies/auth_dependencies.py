@@ -30,7 +30,7 @@ _bearer_scheme = HTTPBearer(auto_error=False)
 async def get_current_principal(
     credentials: HTTPAuthorizationCredentials | None = Depends(_bearer_scheme),
     x_api_key: str | None = Header(default=None),
-    session: AsyncSession = Depends(get_db_session),
+    session: AsyncSession = Depends(get_db_session, scope="function"),
 ) -> Principal:
     if x_api_key:
         return await _principal_from_api_key(x_api_key, session)

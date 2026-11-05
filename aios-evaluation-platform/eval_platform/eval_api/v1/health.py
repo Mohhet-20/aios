@@ -29,7 +29,7 @@ async def liveness() -> dict:
 
 
 @router.get("/health/ready")
-async def readiness(response: Response, session: AsyncSession = Depends(get_session)) -> dict:
+async def readiness(response: Response, session: AsyncSession = Depends(get_session, scope="function")) -> dict:
     report = await build_readiness_report(session)
     response.status_code = 200 if report.healthy else 503
     return {

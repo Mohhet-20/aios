@@ -15,7 +15,7 @@ service and reads every figure on its live pages from the services themselves, t
   gateway and 12 more), each with its own database, health probes, Dockerfile and Kubernetes manifest.
 - A backend-for-frontend edge: httpOnly session cookies, local JWT verification with refresh rotation, and a
   service-to-service token that every service enforces.
-- 3,038 backend tests across the 20 services, 39 frontend tests, a live smoke test of the
+- 3,042 backend tests across the 20 services, 46 frontend tests, a live smoke test of the
   whole system, and a browser walkthrough; all run in CI on every push.
 - Runs on a laptop without Docker (`scripts/dev.py` starts all twenty on SQLite), or with Docker Compose or Kubernetes
   on Postgres.
@@ -52,7 +52,7 @@ token and the verified user id. The browser never holds a token or a service URL
 
 | Service | Port | What it does | Tests |
 |---|---|---|---|
-| `aios-identity-platform` | 8008 | Registration, email verification, password and MFA (TOTP, recovery codes) sign-in, sessions with refresh rotation, organisations, workspaces, RBAC, API keys | 194 |
+| `aios-identity-platform` | 8008 | Registration, email verification, password and MFA (TOTP, recovery codes) sign-in, sessions with refresh rotation, organisations, workspaces, RBAC, API keys | 198 |
 | `aios-agent-platform` | 8003 | Agent registry and lifecycle, task planning, inter-agent messaging, orchestration, reasoning traces, governance and audit | 136 |
 | `aios-prompt-platform` | 8002 | Prompt authoring, versioning, testing, LLM-judge evaluation, experiments, approval and promotion | 148 |
 | `aios-ai-core` | 8001 | LLM gateway: provider abstraction, model routing and fallback, retries, streaming, embeddings, tool calling, cost tracking | 126 |
@@ -72,7 +72,7 @@ token and the verified user id. The browser never holds a token or a service URL
 | `aios-collaboration-platform` | 8009 | Presence, comments, versioning, reviews | 73 |
 | `aios-docs-platform` | 8017 | Documentation portal and learning paths | 141 |
 | `aios-backend` | 8000 | General-purpose backend: auth, orgs, RBAC, background workers | 35 |
-| `aios-frontend` | 3000 | The console and its edge | 39 |
+| `aios-frontend` | 3000 | The console and its edge | 46 |
 
 Each service has its own README with its modules, API surface and design notes.
 
@@ -177,7 +177,7 @@ key. Copy it to `secrets.yaml` (git-ignored), fill it in and apply it before the
 
 | Check | Result (2026-11-03) |
 |---|---|
-| Backend: `python scripts/test_all.py` (each service's own suite) | 3,038 passed, 0 failed, across 20 services; 12 sandbox tests skip on Windows because they need POSIX rlimits, and run on Linux CI |
+| Backend: `python scripts/test_all.py` (each service's own suite) | 3,042 passed, 0 failed, across 20 services; 12 sandbox tests skip on Windows because they need POSIX rlimits, and run on Linux CI |
 | Lint: `ruff check` in every service | clean |
 | Frontend: `npm run typecheck && npm run lint && npm test && npm run build` | clean; 39 tests |
 | System smoke test against all 20 running services | readiness 20/20, writes persist in every workspace service, edge guard enforced |

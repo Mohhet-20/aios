@@ -47,7 +47,7 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
         yield session
 
 
-async def get_repos(session: AsyncSession = Depends(get_session)) -> RepositoryRegistry:
+async def get_repos(session: AsyncSession = Depends(get_session, scope="function")) -> RepositoryRegistry:
     return RepositoryRegistry(session)
 
 
