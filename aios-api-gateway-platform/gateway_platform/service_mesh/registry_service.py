@@ -38,8 +38,8 @@ _INSTANCE_TRANSITIONS: dict[InstanceStatus, set[InstanceStatus]] = {
 class ServiceRegistryService:
     """`register_service` is a get-or-create keyed on `(tenant_id,
     name)` — guarded with an in-process `asyncio.Lock` per key, the
-    same commit-spanning-lock pattern used across every prior AIOS
-    platform's own "upsert by identity" methods, since two concurrent
+    same commit-spanning-lock pattern used across every other AIOS
+    services's own "upsert by identity" methods, since two concurrent
     callers registering the same service name for the first time
     (e.g. two instances of the same service redeploying and
     re-announcing simultaneously) would otherwise both observe no

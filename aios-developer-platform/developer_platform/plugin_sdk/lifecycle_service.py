@@ -31,8 +31,8 @@ def _compute_signature(manifest: dict, secret_key: str) -> str:
 class PluginLifecycleService:
     """`register_plugin` is a get-or-create keyed on `(tenant_id, name)`
     — guarded with an in-process `asyncio.Lock` per key, the same
-    commit-spanning-lock pattern used across every prior AIOS
-    platform's own "upsert by identity" methods (e.g. the
+    commit-spanning-lock pattern used across every other AIOS
+    services's own "upsert by identity" methods (e.g. the
     Infrastructure Platform's `K8sResourceService.apply_resource`),
     since two concurrent callers registering the same plugin name for
     the first time would otherwise both observe no existing row and

@@ -22,8 +22,8 @@ from gateway_platform.repositories.registry import RepositoryRegistry
 class ConnectorService:
     """`register_connector` is a get-or-create keyed on `(tenant_id,
     connector_type)` — guarded with an in-process `asyncio.Lock` per
-    key, the same commit-spanning-lock pattern used across every prior
-    AIOS platform's own "upsert by identity" methods, since two
+    key, the same commit-spanning-lock pattern used across every other
+    AIOS services's own "upsert by identity" methods, since two
     concurrent callers registering the same connector type for the
     first time would otherwise both observe no existing row and both
     insert, producing a duplicate catalog entry."""

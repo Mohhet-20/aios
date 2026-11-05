@@ -1,6 +1,6 @@
 """Import every ORM model so `Base.metadata` is fully populated before
-`create_all()` runs — the same explicit-import pattern every prior AIOS
-platform's models package uses."""
+`create_all()` runs — the same explicit-import pattern every other AIOS
+services's models package uses."""
 from workflow_platform.models.approval import ApprovalCommentModel, ApprovalRequestModel
 from workflow_platform.models.checkpoint import CheckpointModel
 from workflow_platform.models.events import EventModel, SubscriptionModel, WebhookDeliveryModel

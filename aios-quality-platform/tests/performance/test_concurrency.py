@@ -1,8 +1,8 @@
 """Real concurrency stress tests: genuine independent DB connections
 raced via `asyncio.gather`, never the rollback-isolated `repos`
 fixture (which doesn't exercise real cross-connection visibility) —
-the same methodology used to find and fix races in every prior AIOS
-platform. This platform has five commit-spanning-lock check-then-act
+the same methodology used to find and fix races in every other AIOS
+services. This platform has five commit-spanning-lock check-then-act
 sequences: `TestSuiteService.register_suite` (get-or-create by name),
 `BaselineService.set_baseline` (upsert by dimension+subject),
 `SloService.register_slo` (get-or-create by name),

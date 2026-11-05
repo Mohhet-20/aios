@@ -1,8 +1,8 @@
 """Pure-Python domain entities with guarded state machines — no ORM
 imports. Each entity mirrors the `status`/`state` column on its ORM
 model; services translate ORM <-> entity, apply a transition, and
-persist the resulting status back. Same pattern as every prior AIOS
-platform. Simpler status-only resources (service registrations,
+persist the resulting status back. Same pattern as every other AIOS
+services. Simpler status-only resources (service registrations,
 service instances, traffic rules, event topics/subscriptions, webhook
 subscriptions, OAuth clients, security policies) are guarded directly
 in-service instead — the same precedent set by the Infrastructure and

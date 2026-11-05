@@ -1,5 +1,5 @@
 """Pure-Python domain aggregates — no ORM/SQLAlchemy imports here, same
-separation every prior AIOS project used. `MemoryEntry` owns the memory
+separation every AIOS service used. `MemoryEntry` owns the memory
 lifecycle state machine (creation/retrieval/update/versioning/expiration/
 archiving/summarization/importance-scoring/conflict-resolution/deletion);
 `KnowledgeItem` owns the knowledge review/publish workflow.

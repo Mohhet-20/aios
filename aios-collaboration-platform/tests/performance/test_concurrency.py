@@ -1,8 +1,8 @@
 """Real concurrency/stress tests — genuine independent DB
 connections/transactions racing via `asyncio.gather`, not the
 rollback-isolated `repos` fixture the rest of the suite uses. This
-follows the exact methodology established across every prior AIOS
-platform in this build (most recently the Identity Platform's
+follows the exact methodology established across every other AIOS
+services in this build (most recently the Identity Platform's
 seat-quota and session-limit races): write the stress test first,
 trust nothing about "it probably serializes fine," and fix whatever
 genuine race the test proves exists.

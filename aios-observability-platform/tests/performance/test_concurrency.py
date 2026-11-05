@@ -1,8 +1,8 @@
 """Real concurrency stress tests: genuine independent DB connections
 raced via `asyncio.gather`, never the rollback-isolated `repos`
 fixture (which doesn't exercise real cross-connection visibility) —
-the same methodology used to find and fix races in every prior AIOS
-platform. `AlertEvaluationService.fire_or_update`/
+the same methodology used to find and fix races in every other AIOS
+services. `AlertEvaluationService.fire_or_update`/
 `auto_resolve_if_healed` are this platform's one commit-spanning-lock
 check-then-act sequence (see that module's docstring); this test
 proves the per-dedup-key `asyncio.Lock` actually prevents the alert

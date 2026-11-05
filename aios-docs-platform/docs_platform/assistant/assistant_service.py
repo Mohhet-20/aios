@@ -95,7 +95,7 @@ class AssistantService:
             # SQLite round-trips DateTime(timezone=True) columns as
             # naive — normalize to aware (assuming UTC, the only
             # timezone this platform ever writes) before comparing,
-            # the same pitfall documented across every prior AIOS
+            # the same pitfall documented across every other AIOS
             # platform's naive/aware datetime comparisons.
             if reviewed_at.tzinfo is None:
                 reviewed_at = reviewed_at.replace(tzinfo=timezone.utc)

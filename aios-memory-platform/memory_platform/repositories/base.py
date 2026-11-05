@@ -1,5 +1,5 @@
 """Generic async repository — manual optimistic locking, soft delete,
-pagination. Same pattern as every prior AIOS project."""
+pagination. Same pattern as every AIOS service."""
 from __future__ import annotations
 
 

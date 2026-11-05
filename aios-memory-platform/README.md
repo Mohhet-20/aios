@@ -16,7 +16,7 @@ uvicorn memory_platform.main:app --reload --port 8300
 pytest   # 184 tests, all green, zero real network calls
 ```
 
-Every AI Core call in the test suite runs through a fully scripted, network-free `ScriptedProvider` double (`tests/conftest.py`) — the same pattern every prior AIOS project uses — while still exercising the genuine embedding/execution/structured-output path, not a simplified mock of it.
+Every AI Core call in the test suite runs through a fully scripted, network-free `ScriptedProvider` double (`tests/conftest.py`) — the same pattern every AIOS service uses — while still exercising the genuine embedding/execution/structured-output path, not a simplified mock of it.
 
 ## Architecture
 
@@ -50,7 +50,7 @@ The same "write real tests immediately, run them, fix genuine bugs" loop used th
 
 ## Self-review
 
-**Can memory scale horizontally?** The write path is genuinely stateless per request (FastAPI dependency-injected session per call, `NullPool` for SQLite in this build), so the API layer scales horizontally today behind a load balancer. The honest constraint is the datastore: this build ships on SQLite (proven out with WAL mode and a busy-timeout, the same fix every prior AIOS project needed), which is correct for development and demonstrates every code path but is not itself a horizontally-scalable production datastore. Every query in this platform goes through the repository layer (never raw SQL scattered through services), which is precisely what makes the swap to a real distributed Postgres (or a sharded-by-workspace scheme, since `workspace_id` is on every table and every query) a repository-layer change, not an application-wide rewrite.
+**Can memory scale horizontally?** The write path is genuinely stateless per request (FastAPI dependency-injected session per call, `NullPool` for SQLite in this build), so the API layer scales horizontally today behind a load balancer. The honest constraint is the datastore: this build ships on SQLite (proven out with WAL mode and a busy-timeout, the same fix every AIOS service needed), which is correct for development and demonstrates every code path but is not itself a horizontally-scalable production datastore. Every query in this platform goes through the repository layer (never raw SQL scattered through services), which is precisely what makes the swap to a real distributed Postgres (or a sharded-by-workspace scheme, since `workspace_id` is on every table and every query) a repository-layer change, not an application-wide rewrite.
 
 **Can retrieval remain fast as knowledge grows?** Structurally, yes, by design: the Vector Platform's embedding storage is decoupled from the actual vector math via the `VectorStore` abstraction, so swapping the AI Core's in-memory reference implementation (documented there as O(n) cosine similarity, correct for development, not for millions of vectors) for a real ANN index (pgvector, Qdrant, Pinecone) is a one-class change behind an interface every downstream caller (Retrieval Engine, Context Assembly) already goes through — none of them talk to `VectorStore` directly. Keyword search and metadata filtering are indexed SQL columns today. The honest gap is that the actual query latency at millions-of-vectors scale is untested, because that requires the real ANN backend this platform is structured to receive but doesn't ship with.
 

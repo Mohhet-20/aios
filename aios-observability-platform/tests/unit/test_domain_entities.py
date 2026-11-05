@@ -1,7 +1,7 @@
 """Direct unit tests of the guarded domain-entity state machines in
 `domain/entities.py` — no database involved, just the pure-Python
-transition logic. Mirrors the pattern established in every prior AIOS
-platform's `tests/unit/test_domain_entities.py`."""
+transition logic. Mirrors the pattern established in every other AIOS
+services's `tests/unit/test_domain_entities.py`."""
 from __future__ import annotations
 
 import pytest

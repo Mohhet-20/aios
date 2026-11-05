@@ -1,5 +1,5 @@
-"""ORM <-> domain-aggregate bridge for Workflow, mirroring every prior
-AIOS platform's mappers.py pattern."""
+"""ORM <-> domain-aggregate bridge for Workflow, mirroring every other
+AIOS services's mappers.py pattern."""
 from __future__ import annotations
 
 from workflow_platform.domain.entities import Workflow

@@ -1,8 +1,8 @@
 """Real concurrency stress test: genuine independent DB connections
 raced via `asyncio.gather`, never the rollback-isolated `repos`
 fixture (which doesn't exercise real cross-connection visibility) —
-the same methodology used to find and fix races in every prior AIOS
-platform. This platform has exactly one commit-spanning-lock
+the same methodology used to find and fix races in every other AIOS
+services. This platform has exactly one commit-spanning-lock
 check-then-act sequence: `CacheService.set` (get-or-create by
 tenant_id+layer+key). This test proves the per-key `asyncio.Lock`
 actually prevents the duplicate-row race a naive "check then write"

@@ -17,8 +17,8 @@ from gateway_platform.repositories.registry import RepositoryRegistry
 class EventTopicService:
     """`register_topic` is a get-or-create keyed on `(tenant_id,
     name)` — guarded with an in-process `asyncio.Lock` per key, the
-    same commit-spanning-lock pattern used across every prior AIOS
-    platform's own "upsert by identity" methods, since two concurrent
+    same commit-spanning-lock pattern used across every other AIOS
+    services's own "upsert by identity" methods, since two concurrent
     publishers announcing the same topic name for the first time would
     otherwise both observe no existing row and both insert, producing
     a duplicate topic."""

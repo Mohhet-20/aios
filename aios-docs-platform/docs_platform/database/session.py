@@ -1,6 +1,6 @@
 """Async engine/session management. SQLite needs WAL + a busy timeout +
 NullPool to behave under concurrent access in tests and dev — the same
-fix every prior AIOS project needed, applied from the start here.
+fix every AIOS service needed, applied from the start here.
 
 Two generator helpers with different commit contracts, by design:
 `session_scope()` commits on a clean exit and rolls back on exception —

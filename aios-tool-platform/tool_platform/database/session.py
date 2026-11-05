@@ -1,6 +1,6 @@
 """Async engine/session management. SQLite needs WAL + a busy timeout +
 NullPool to behave under concurrent access in tests and dev — proactively
-applied from the start, the same fix every prior AIOS project needed."""
+applied from the start, the same fix every AIOS service needed."""
 from __future__ import annotations
 
 from collections.abc import AsyncGenerator

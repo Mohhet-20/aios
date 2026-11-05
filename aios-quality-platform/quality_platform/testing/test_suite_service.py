@@ -1,7 +1,7 @@
 """Test suite & test case management. `register_suite` is a
 get-or-create keyed on (tenant_id, name) behind a commit-spanning
-`asyncio.Lock` — the same pattern established across every prior AIOS
-platform for check-then-act races that span multiple statements: the
+`asyncio.Lock` — the same pattern established across every other AIOS
+services for check-then-act races that span multiple statements: the
 lock must still be held when `session.commit()` runs, or a second
 caller waiting on the lock can acquire it and query before the first
 caller's insert is durably visible to a separate DB connection."""

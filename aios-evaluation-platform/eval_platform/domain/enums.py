@@ -1,5 +1,5 @@
 """Every enum the evaluation/benchmarking/observability domain needs.
-Grouped to mirror the prompt spec's own section headers."""
+Grouped by evaluation category."""
 from __future__ import annotations
 
 from enum import Enum

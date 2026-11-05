@@ -1,8 +1,8 @@
 """Pure-Python domain entities with guarded state machines — no ORM
 imports. Each entity mirrors the `status`/`stage` column on its ORM
 model; services translate ORM <-> entity, apply a transition, and
-persist the resulting status back. Same pattern as every prior AIOS
-platform."""
+persist the resulting status back. Same pattern as every other AIOS
+services."""
 from __future__ import annotations
 
 from dataclasses import dataclass

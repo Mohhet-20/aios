@@ -1,5 +1,5 @@
-"""ORM <-> domain-aggregate bridge for Evaluation, mirroring every prior
-AIOS platform's mappers.py pattern."""
+"""ORM <-> domain-aggregate bridge for Evaluation, mirroring every other
+AIOS services's mappers.py pattern."""
 from __future__ import annotations
 
 from eval_platform.domain.entities import Evaluation

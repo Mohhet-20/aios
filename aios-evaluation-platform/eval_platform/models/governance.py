@@ -1,6 +1,6 @@
 """RBAC grants + a single consolidated audit log — the same
-consolidation (one table, not one per domain) every prior AIOS
-platform's governance module uses."""
+consolidation (one table, not one per domain) every other AIOS
+services's governance module uses."""
 from __future__ import annotations
 
 from sqlalchemy import JSON, DateTime, String

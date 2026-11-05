@@ -18,8 +18,8 @@ from developer_platform.repositories.registry import RepositoryRegistry
 class DeveloperRbacService:
     """`grant_role` is an upsert keyed on `(tenant_id, principal_id,
     scope)` — guarded with an in-process `asyncio.Lock` per key, the
-    same commit-spanning-lock pattern used across every prior AIOS
-    platform's own upsert-by-identity methods, so two concurrent
+    same commit-spanning-lock pattern used across every other AIOS
+    services's own upsert-by-identity methods, so two concurrent
     grants for the same principal/scope can never both observe no
     existing binding and both insert a duplicate row."""
 

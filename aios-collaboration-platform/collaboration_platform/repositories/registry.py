@@ -1,7 +1,7 @@
 """RepositoryRegistry: wires every repository to one shared AsyncSession,
 so a single unit-of-work-scoped session backs every repository an
-application-service call touches. Same pattern as every prior AIOS
-platform's `RepositoryRegistry`."""
+application-service call touches. Same pattern as every other AIOS
+services's `RepositoryRegistry`."""
 from __future__ import annotations
 
 from sqlalchemy.ext.asyncio import AsyncSession

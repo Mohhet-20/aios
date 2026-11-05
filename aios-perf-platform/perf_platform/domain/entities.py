@@ -1,6 +1,6 @@
 """Pure-Python domain entities with guarded state-machine transitions.
-No ORM imports here — these are the same shape every prior AIOS
-platform used for its bespoke lifecycles, kept separate from the ORM
+No ORM imports here — these are the same shape every other AIOS
+services used for its bespoke lifecycles, kept separate from the ORM
 models so the transition rules are testable without a database.
 
 Two entity shapes in this platform:

@@ -1,5 +1,5 @@
-"""ORM <-> domain-aggregate bridge for Tool, mirroring every prior AIOS
-platform's mappers.py pattern."""
+"""ORM <-> domain-aggregate bridge for Tool, mirroring every other AIOS
+services's mappers.py pattern."""
 from __future__ import annotations
 
 from tool_platform.domain.entities import Tool

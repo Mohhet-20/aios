@@ -1,7 +1,7 @@
 """Quality gate management: `create_gate` is a get-or-create upsert
 keyed on (tenant_id, release_ref, name) behind a commit-spanning
-`asyncio.Lock` — the same pattern established across every prior AIOS
-platform, with the mid-lock commit needed so a waiting caller's read
+`asyncio.Lock` — the same pattern established across every other AIOS
+services, with the mid-lock commit needed so a waiting caller's read
 can't observe a still-uncommitted insert from a separate DB
 connection. record_check() logs one of the eight check types'
 pass/fail outcome; evaluate_gate() scores the gate as the percentage
