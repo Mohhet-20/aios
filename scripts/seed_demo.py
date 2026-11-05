@@ -2,6 +2,7 @@
 
     python scripts/seed_demo.py                    # services on the default local ports (scripts/dev.py)
     AIOS_INTERNAL_TOKEN=... python scripts/seed_demo.py
+    AIOS_SERVICES_BASE_URL=http://127.0.0.1:8000/svc python scripts/seed_demo.py   # all services in one process
 
 Creates one verified demo user and organisation in the identity service, a "Customer Operations" workspace in each
 domain service, and realistic agents, prompts, workflows, tools, evaluations and datasets inside it. Idempotent:
@@ -19,6 +20,7 @@ import urllib.request
 
 PORTS = {"identity": 8008, "prompt": 8002, "agent": 8003, "workflow": 8005, "tool": 8006, "evaluation": 8007}
 HOST = os.environ.get("AIOS_SERVICE_HOST", "127.0.0.1")
+BASE = os.environ.get("AIOS_SERVICES_BASE_URL", "").rstrip("/")  # <base>/<service>, as in the console's edge
 TOKEN = os.environ.get("AIOS_INTERNAL_TOKEN", "")
 EMAIL = os.environ.get("AIOS_DEMO_EMAIL", "demo@aios.dev")
 PASSWORD = os.environ.get("AIOS_DEMO_PASSWORD", "Northwind-Demo-2026!")
@@ -33,7 +35,7 @@ class ApiError(RuntimeError):
 
 
 def call(service: str, method: str, path: str, body: dict | None = None, *, user: str | None = None):
-    url = f"http://{HOST}:{PORTS[service]}{path}"
+    url = f"{BASE}/{service}{path}" if BASE else f"http://{HOST}:{PORTS[service]}{path}"
     headers = {"Content-Type": "application/json"}
     if TOKEN:
         headers["X-Internal-Token"] = TOKEN

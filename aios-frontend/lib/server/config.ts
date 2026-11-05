@@ -4,9 +4,12 @@ import "server-only";
  * Edge (backend-for-frontend) configuration. Read on the server only: nothing here reaches the browser bundle.
  *
  *   AIOS_<SERVICE>_URL      base URL of each domain service (defaults: the local ports scripts/dev.py uses)
+ *   AIOS_SERVICES_BASE_URL  all services behind one host as <base>/<service> (the hosted demo's single process);
+ *                           a per-service AIOS_<SERVICE>_URL still wins
  *   AIOS_INTERNAL_TOKEN     service-to-service token sent as X-Internal-Token (services enforce it when set)
  *   AIOS_JWT_SECRET         the identity service's signing key, to verify access tokens locally
- *   AIOS_DEMO_EMAIL/_PASSWORD  optional public demo account shown on the sign-in page
+ *   AIOS_GUEST_ACCESS       "true" on a hosted public demo: the sign-in page offers "Explore the live demo"
+ *                           (the identity service's /auth/guest; no password is ever shown)
  */
 
 export const SERVICES = {
@@ -37,7 +40,9 @@ export type ServiceName = keyof typeof SERVICES;
 export function serviceUrl(name: ServiceName): string {
   const key = `AIOS_${name.toUpperCase().replace(/-/g, "_")}_URL`;
   const fromEnv = process.env[key]?.trim();
-  return (fromEnv || `http://127.0.0.1:${SERVICES[name].port}`).replace(/\/+$/, "");
+  if (fromEnv) return fromEnv.replace(/\/+$/, "");
+  const base = process.env.AIOS_SERVICES_BASE_URL?.trim().replace(/\/+$/, "");
+  return base ? `${base}/${name}` : `http://127.0.0.1:${SERVICES[name].port}`;
 }
 
 export function internalToken(): string {
@@ -54,10 +59,8 @@ export function jwtSecret(): Uint8Array {
   return new TextEncoder().encode(secret || DEV_IDENTITY_SECRET);
 }
 
-export function demoAccount(): { email: string; password: string } | null {
-  const email = process.env.AIOS_DEMO_EMAIL?.trim();
-  const password = process.env.AIOS_DEMO_PASSWORD?.trim();
-  return email && password ? { email, password } : null;
+export function guestAccessEnabled(): boolean {
+  return process.env.AIOS_GUEST_ACCESS?.trim() === "true";
 }
 
 export const COOKIE = { access: "aios_at", refresh: "aios_rt" } as const;

@@ -10,7 +10,8 @@ from identity_platform.authentication.login_service import LoginService
 from identity_platform.authentication.magic_link_service import MagicLinkService
 from identity_platform.authentication.password_service import PasswordService
 from identity_platform.authentication.registration_service import RegistrationService
-from identity_platform.core.exceptions import InvalidMfaCodeError, MfaRequiredError
+from identity_platform.config.settings import Settings
+from identity_platform.core.exceptions import AuthorizationError, InvalidMfaCodeError, MfaRequiredError, NotFoundError
 from identity_platform.dependencies.dependencies import (
     get_email_verification_service,
     get_login_service,
@@ -18,10 +19,14 @@ from identity_platform.dependencies.dependencies import (
     get_mfa_service,
     get_password_service,
     get_registration_service,
+    get_repos,
     get_session_service,
+    get_settings_dep,
 )
 from identity_platform.identity_api.serialization import to_dict
+from identity_platform.domain.enums import MembershipStatus, UserStatus
 from identity_platform.mfa.mfa_service import MfaService
+from identity_platform.repositories.registry import RepositoryRegistry
 from identity_platform.sessions.session_service import SessionService
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
@@ -98,6 +103,55 @@ async def issue_token(
     result = await sessions.create_session(
         user.id, organization_id=body.organization_id or user.primary_organization_id,
         ip_address=body.ip_address, user_agent=body.user_agent,
+    )
+    return {
+        "user": to_dict(user), "session": to_dict(result.session),
+        "access_token": result.access_token, "refresh_token": result.raw_refresh_token,
+    }
+
+
+# Roles whose holders are never signed in through the public guest endpoint.
+PRIVILEGED_ROLE_SLUGS = frozenset({"system_admin", "org_owner", "org_admin", "workspace_admin"})
+
+
+class GuestRequest(BaseModel):
+    ip_address: str | None = None
+    user_agent: str | None = None
+
+
+@router.post("/guest")
+async def guest_session(
+    body: GuestRequest,
+    repos: RepositoryRegistry = Depends(get_repos),
+    sessions: SessionService = Depends(get_session_service),
+    settings: Settings = Depends(get_settings_dep),
+):
+    """Public demo sign-in: a session for the configured guest account, with no password involved. 404 unless
+    GUEST_ACCESS_ENABLED and GUEST_EMAIL are set. Refused (403) if that account owns an organisation or holds an
+    administrative role anywhere, so a misconfiguration can never hand visitors an administrator. Like every route
+    here it is reachable only through the console's edge (X-Internal-Token)."""
+    email = settings.guest_email.strip().lower()
+    if not settings.guest_access_enabled or not email:
+        raise NotFoundError("guest access is not enabled on this deployment")
+    user = await repos.users.get_by_email(email)
+    if user is None or user.status != UserStatus.ACTIVE.value:
+        raise NotFoundError("the guest account is not set up on this deployment")
+    # A member (not an owner) has no primary organisation; use the organisation they actively belong to.
+    org_id = user.primary_organization_id
+    if org_id is None:
+        active = [m for m in await repos.organization_memberships.list_for_user(user.id) if m.status == MembershipStatus.ACTIVE.value]
+        org_id = active[0].organization_id if active else None
+    if org_id is None:
+        raise NotFoundError("the guest account is not a member of any organisation")
+    org = await repos.organizations.get(org_id)
+    if org is not None and org.owner_user_id == user.id:
+        raise AuthorizationError("guest access is misconfigured: the guest account owns its organisation")
+    for assignment in await repos.role_assignments.list_for_principal("user", user.id):
+        role = await repos.roles.get(assignment.role_id)
+        if role is not None and role.slug in PRIVILEGED_ROLE_SLUGS:
+            raise AuthorizationError("guest access is misconfigured: the guest account holds an administrative role")
+    result = await sessions.create_session(
+        user.id, organization_id=org_id, ip_address=body.ip_address, user_agent=body.user_agent,
     )
     return {
         "user": to_dict(user), "session": to_dict(result.session),

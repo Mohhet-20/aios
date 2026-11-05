@@ -324,8 +324,6 @@ services:
       NODE_ENV: production
       AIOS_INTERNAL_TOKEN: ${AIOS_INTERNAL_TOKEN:?set AIOS_INTERNAL_TOKEN in .env}
       AIOS_JWT_SECRET: ${AIOS_JWT_SECRET:?set AIOS_JWT_SECRET in .env}
-      AIOS_DEMO_EMAIL: ${AIOS_DEMO_EMAIL:-}
-      AIOS_DEMO_PASSWORD: ${AIOS_DEMO_PASSWORD:-}
       AIOS_BACKEND_URL: http://backend:8000
       AIOS_AI_CORE_URL: http://ai-core:8000
       AIOS_PROMPT_URL: http://prompt-platform:8000

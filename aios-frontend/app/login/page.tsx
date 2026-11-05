@@ -1,4 +1,4 @@
-import { demoAccount } from "@/lib/server/config";
+import { guestAccessEnabled } from "@/lib/server/config";
 import { safeNextPath } from "@/lib/safe-next";
 import { LoginForm } from "./login-form";
 
@@ -9,7 +9,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const safeNext = safeNextPath(next);
   return (
     <main className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
-      <LoginForm next={safeNext} demo={demoAccount()} />
+      <LoginForm next={safeNext} guest={guestAccessEnabled()} />
     </main>
   );
 }

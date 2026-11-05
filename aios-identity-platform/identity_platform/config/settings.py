@@ -52,6 +52,12 @@ class Settings(BaseSettings):
     totp_digits: int = 6
     recovery_code_count: int = 10
 
+    # Public demo: POST /auth/guest opens a session for the account GUEST_EMAIL names (an ordinary member of the demo
+    # organisation), so a hosted demo can offer "Explore the live demo" without publishing any password. Off by
+    # default; it never opens a session for an owner or administrator.
+    guest_access_enabled: bool = False
+    guest_email: str = ""
+
     # Invitations
     invitation_ttl_days: int = 14
 

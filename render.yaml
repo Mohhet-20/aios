@@ -1,0 +1,46 @@
+# Render blueprint for the hosted public demo. New > Blueprint > pick this repository > Apply.
+#
+# aios-demo-api: all twenty services in one process (deploy/demo/Dockerfile), seeded demo organisation, guest access.
+# aios-console:  the Next.js console and its edge (aios-frontend/Dockerfile). It calls the API server-to-server; the
+#                internal token and the identity signing key are generated once and shared between the two below.
+# A real deployment runs every service separately: docker-compose.yml or k8s/.
+services:
+  - type: web
+    name: aios-demo-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./deploy/demo/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: AIOS_INTERNAL_TOKEN
+        generateValue: true
+      # Optional: your password for the demo organisation's owner, demo@aios.dev (12+ characters with upper, lower,
+      # digit and symbol). Unset, that account stays locked. Set it in the dashboard; never commit it.
+      - key: AIOS_OWNER_PASSWORD
+        sync: false
+
+  - type: web
+    name: aios-console
+    runtime: docker
+    plan: free
+    dockerfilePath: ./aios-frontend/Dockerfile
+    dockerContext: ./aios-frontend
+    healthCheckPath: /login
+    envVars:
+      - key: AIOS_SERVICES_BASE_URL
+        value: https://aios-demo-api.onrender.com/svc
+      - key: AIOS_GUEST_ACCESS
+        value: "true"
+      - key: AIOS_INTERNAL_TOKEN
+        fromService:
+          type: web
+          name: aios-demo-api
+          envVarKey: AIOS_INTERNAL_TOKEN
+      - key: AIOS_JWT_SECRET
+        fromService:
+          type: web
+          name: aios-demo-api
+          envVarKey: SECRET_KEY

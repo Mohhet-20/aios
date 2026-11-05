@@ -44,7 +44,8 @@ in `lib/mock-data.ts`.
 | `AIOS_<SERVICE>_URL` | base URL of each service, e.g. `AIOS_AGENT_URL`; defaults to the local ports `scripts/dev.py` uses |
 | `AIOS_INTERNAL_TOKEN` | sent as `X-Internal-Token`; must match the services' value |
 | `AIOS_JWT_SECRET` | the identity service's `SECRET_KEY`; required in production |
-| `AIOS_DEMO_EMAIL`, `AIOS_DEMO_PASSWORD` | optional demo account shown on the sign-in page |
+| `AIOS_SERVICES_BASE_URL` | all services behind one host as `<base>/<service>` (the hosted demo); a per-service URL still wins |
+| `AIOS_GUEST_ACCESS` | `true` on a hosted demo: the sign-in page offers *Explore the live demo* (identity's `/auth/guest`); no password is ever shown |
 
 Nothing here is a `NEXT_PUBLIC_` variable: no secret or service URL reaches the browser bundle.
 

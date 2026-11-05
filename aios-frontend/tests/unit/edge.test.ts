@@ -79,3 +79,18 @@ describe("itemsOf", () => {
     expect(itemsOf({ error: "x" })).toEqual([]);
   });
 });
+
+describe("serviceUrl", () => {
+  it("defaults to the local development ports", async () => {
+    const { serviceUrl } = await import("@/lib/server/config");
+    expect(serviceUrl("identity")).toBe("http://127.0.0.1:8008");
+  });
+
+  it("puts every service under one host when AIOS_SERVICES_BASE_URL is set; a per-service URL still wins", async () => {
+    vi.stubEnv("AIOS_SERVICES_BASE_URL", "https://aios-demo-api.example/svc/");
+    const { serviceUrl } = await import("@/lib/server/config");
+    expect(serviceUrl("ai-core")).toBe("https://aios-demo-api.example/svc/ai-core");
+    vi.stubEnv("AIOS_IDENTITY_URL", "http://identity.internal:8008/");
+    expect(serviceUrl("identity")).toBe("http://identity.internal:8008");
+  });
+});

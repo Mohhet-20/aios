@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { api, ApiError } from "@/services/api-client";
 import { Loader2 } from "lucide-react";
 
-export function LoginForm({ next, demo }: { next: string; demo: { email: string; password: string } | null }) {
+export function LoginForm({ next, guest }: { next: string; guest: boolean }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mfaCode, setMfaCode] = useState("");
@@ -17,6 +17,20 @@ export function LoginForm({ next, demo }: { next: string; demo: { email: string;
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const router = useRouter();
+
+  async function exploreDemo() {
+    setBusy(true);
+    setError(null);
+    try {
+      await api("/api/auth/guest", { method: "POST", body: {} });
+      router.replace(next);
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Could not start a demo session.");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -45,6 +59,24 @@ export function LoginForm({ next, demo }: { next: string; demo: { email: string;
         <CardDescription>Your session is kept in a secure, httpOnly cookie; no token reaches this page.</CardDescription>
       </CardHeader>
       <CardContent>
+        {guest && (
+          <div className="mb-5 space-y-3">
+            <Button type="button" className="w-full" onClick={() => void exploreDemo()} disabled={busy}>
+              {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Explore the live demo
+            </Button>
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              Opens the Northwind Operations demo organisation (synthetic data) as an ordinary member: agents, prompts,
+              workflows, tools, evaluations and the live health of all twenty services. No administration, and the demo
+              resets when the server restarts.
+            </p>
+            <div className="flex items-center gap-3 text-xs text-muted-foreground" aria-hidden>
+              <span className="h-px flex-1 bg-border" />
+              or
+              <span className="h-px flex-1 bg-border" />
+            </div>
+          </div>
+        )}
         <form onSubmit={submit} className="space-y-4" aria-label="Sign in">
           <div className="space-y-1.5">
             <Label htmlFor="email">Email</Label>
@@ -71,26 +103,6 @@ export function LoginForm({ next, demo }: { next: string; demo: { email: string;
             {busy ? "Signing in…" : "Sign in"}
           </Button>
         </form>
-        {demo && (
-          <div className="mt-5 rounded-md border border-dashed border-border p-3 text-xs text-muted-foreground" aria-label="Demo account">
-            <p>
-              Public demo with synthetic data: <span className="font-mono text-foreground">{demo.email}</span> /{" "}
-              <span className="font-mono text-foreground">{demo.password}</span>
-            </p>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="mt-2"
-              onClick={() => {
-                setEmail(demo.email);
-                setPassword(demo.password);
-              }}
-            >
-              Use demo account
-            </Button>
-          </div>
-        )}
       </CardContent>
     </Card>
   );

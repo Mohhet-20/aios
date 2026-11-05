@@ -1,0 +1,15 @@
+# Build context for deploy/demo/Dockerfile (the repository root). Each service's own Dockerfile has its own context.
+.git
+**/node_modules
+**/.next
+**/.venv
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/*.db
+**/*.db-wal
+**/*.db-shm
+**/.env
+**/.env.*
+var
+docs/screenshots

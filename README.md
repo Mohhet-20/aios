@@ -1,5 +1,8 @@
 # AIOS: Enterprise AI Operating System
 
+**Live demo: [aios-console.onrender.com](https://aios-console.onrender.com)** — choose *Explore the live demo*. All twenty
+services run behind it; see [Hosted demo](#hosted-demo).
+
 AIOS is a microservice platform for running AI agents, prompts, workflows, tools and evaluations inside an
 organisation. It is 20 FastAPI services and a Next.js console. The console signs users in through the identity
 service and reads every figure on its live pages from the services themselves, through a server-side edge.
@@ -107,6 +110,33 @@ be mistaken for live figures.
 - **Sandboxed tools.** Code-execution tools run in a subprocess with CPU and memory rlimits and a wall-clock timeout.
   Where rlimits don't exist (Windows) the sandbox refuses to run anything rather than run it unconfined.
 
+## Hosted demo
+
+The [live demo](https://aios-console.onrender.com) runs on Render's free tier, which gives each service 512 MB. Twenty
+separate Python processes would need well over a gigabyte, so the demo API runs all twenty services in one process
+([`deploy/demo/combined.py`](deploy/demo/combined.py)) and the console runs as its own service:
+
+- **Same services, one interpreter.** `combined.py` imports each service's unmodified FastAPI application and serves it
+  under `/svc/<name>` with the prefix stripped, so every service sees exactly the routes and health-probe exemptions it
+  sees on its own port. Each keeps its own SQLite database and enforces `X-Internal-Token`; the console reaches them
+  through `AIOS_SERVICES_BASE_URL`. Measured: about 220 MB resident for all twenty, ready in seconds.
+- **Seeded through the APIs.** At image build time [`deploy/demo/demo_build.py`](deploy/demo/demo_build.py) starts the
+  platform and runs `scripts/seed_demo.py` against it: the Northwind Operations organisation with its agents, prompts,
+  workflows, tools, evaluations and datasets. Every start copies that showcase afresh
+  ([`deploy/demo/demo_start.py`](deploy/demo/demo_start.py)).
+- **Guest sign-in, no published account.** *Explore the live demo* calls the edge's `/api/auth/guest`, which asks the
+  identity service's `POST /auth/guest` (off unless `GUEST_ACCESS_ENABLED`, reachable only with the internal token) for a
+  session for an ordinary member of the demo organisation. It refuses an account that owns an organisation or holds an
+  administrative role. The seeded owner, `demo@aios.dev`, has a random password nobody knows unless you set
+  `AIOS_OWNER_PASSWORD` as a hosting secret.
+- **Secrets.** `render.yaml` generates the internal token and the identity signing key once and shares them with the
+  console (`AIOS_INTERNAL_TOKEN`, `AIOS_JWT_SECRET`); nothing secret is committed.
+- **Model Playground.** No AI provider key is configured, so it shows the gateway's own error, as described above. Add
+  `ANTHROPIC_API_KEY` (or another provider) to the API service to make it generate.
+- **Free-tier behaviour.** Both services sleep when idle; the first visit after a pause takes about a minute.
+
+A real deployment runs every service separately: `docker-compose.yml` or `k8s/`.
+
 ## Run it
 
 ### Locally, without Docker
@@ -123,11 +153,11 @@ python scripts/seed_demo.py      # demo organisation with agents, prompts, workf
 python scripts/smoke_test.py     # readiness, write persistence and the edge guard, over real HTTP
 
 cd aios-frontend && npm ci
-AIOS_INTERNAL_TOKEN=$AIOS_INTERNAL_TOKEN \
-AIOS_DEMO_EMAIL=demo@aios.dev AIOS_DEMO_PASSWORD='Northwind-Demo-2026!' npm run dev   # http://localhost:3000
+AIOS_INTERNAL_TOKEN=$AIOS_INTERNAL_TOKEN npm run dev   # http://localhost:3000
 ```
 
-Sign in with the demo account shown on the sign-in page. To use the playground, give AI Core a provider: for example
+Sign in with the local demo account `seed_demo.py` prints at the end (local development only; the hosted demo
+publishes no account and uses a guest session instead). To use the playground, give AI Core a provider: for example
 `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, or an Ollama endpoint (see `aios-ai-core/README.md`).
 
 ### Docker Compose
